@@ -1,2 +1,4 @@
 .idea
 backend/configs/app.yaml
+backend/tmp
+backend/main
