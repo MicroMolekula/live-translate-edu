@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"backend/internal/services/room"
 	"github.com/gin-gonic/gin"
+	"github.com/live-translate-edu/internal/services/room"
 	"net/http"
 )
 

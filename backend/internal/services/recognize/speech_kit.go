@@ -1,11 +1,11 @@
 package recognize
 
 import (
-	"backend/cloudapi/output/github.com/yandex-cloud/go-genproto/yandex/cloud/ai/stt/v3"
-	"backend/internal/configs"
 	"context"
 	"crypto/tls"
 	"fmt"
+	"github.com/live-translate-edu/cloudapi/output/github.com/yandex-cloud/go-genproto/yandex/cloud/ai/stt/v3"
+	"github.com/live-translate-edu/internal/configs"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"io"

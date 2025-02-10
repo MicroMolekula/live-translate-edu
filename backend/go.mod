@@ -1,4 +1,4 @@
-module backend
+module github.com/live-translate-edu
 
 go 1.23.6
 

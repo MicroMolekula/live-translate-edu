@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"backend/internal/configs"
-	"backend/internal/services/recognize"
 	"github.com/gin-gonic/gin"
+	"github.com/live-translate-edu/internal/configs"
+	"github.com/live-translate-edu/internal/services/recognize"
 )
 
 type SpeechTranslatorController struct {

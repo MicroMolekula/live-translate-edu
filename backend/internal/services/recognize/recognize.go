@@ -1,10 +1,10 @@
 package recognize
 
 import (
-	trnl "backend/internal/services/translate"
 	"bytes"
 	"context"
 	"fmt"
+	trnl "github.com/live-translate-edu/internal/services/translate"
 	lksdk "github.com/livekit/server-sdk-go/v2"
 	"github.com/livekit/server-sdk-go/v2/pkg/samplebuilder"
 	"github.com/pion/rtp/codecs"

@@ -1,9 +1,9 @@
 package database
 
 import (
-	"backend/internal/configs"
-	"backend/internal/models"
 	"fmt"
+	"github.com/live-translate-edu/internal/configs"
+	"github.com/live-translate-edu/internal/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"

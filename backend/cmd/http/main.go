@@ -1,10 +1,10 @@
 package main
 
 import (
-	"backend/internal/configs"
-	"backend/internal/controllers"
-	"backend/internal/database"
 	"fmt"
+	"github.com/live-translate-edu/internal/configs"
+	"github.com/live-translate-edu/internal/controllers"
+	"github.com/live-translate-edu/internal/database"
 	"log"
 )
 
