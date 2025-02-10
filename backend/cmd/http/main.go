@@ -3,6 +3,7 @@ package main
 import (
 	"backend/internal/configs"
 	"backend/internal/controllers"
+	"backend/internal/database"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -27,6 +28,7 @@ func CORSMiddleware() gin.HandlerFunc {
 
 func main() {
 	configs.LoadConfig()
+	database.Init()
 
 	recognizerController := controllers.NewRecognizerController()
 	r := gin.Default()
@@ -34,7 +36,12 @@ func main() {
 	r.POST("/api/token", controllers.GetJoinToken)
 	r.GET("/api/connect", recognizerController.Connect)
 	r.GET("/api/disconnect", recognizerController.Disconnect)
-	err := r.Run(fmt.Sprintf("%s:%d", configs.Cfg.ServerHost, configs.Cfg.ServerPort))
+	r.GET("/api/test", func(ctx *gin.Context) {
+		ctx.JSON(200, gin.H{
+			"message": "Hello, world",
+		})
+	})
+	err := r.Run(fmt.Sprintf(":%d", configs.Cfg.ServerPort))
 	if err != nil {
 		log.Fatalf("Ошибка при запуске http сервера: %s", err)
 	}

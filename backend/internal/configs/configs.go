@@ -7,9 +7,10 @@ import (
 )
 
 type Config struct {
-	Yandex  `yaml:"yandex"`
-	Server  `yaml:"server"`
-	LiveKit `yaml:"livekit"`
+	Yandex   `yaml:"yandex"`
+	Server   `yaml:"server"`
+	LiveKit  `yaml:"livekit"`
+	Database `yaml:"database"`
 }
 
 type Yandex struct {
@@ -29,6 +30,15 @@ type LiveKit struct {
 	LiveKitApiKey    string `yaml:"livekit_api_key"`
 	LiveKitApiSecret string `yaml:"livekit_api_secret"`
 	LiveKitIdentity  string `yaml:"livekit_identity"`
+}
+
+type Database struct {
+	Host     string `yaml:"host"`
+	Port     int    `yaml:"port"`
+	User     string `yaml:"user"`
+	Password string `yaml:"password"`
+	DbName   string `yaml:"dbname"`
+	Timezone string `yaml:"timezone"`
 }
 
 func NewConfig() *Config {
