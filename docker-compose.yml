@@ -5,7 +5,7 @@ services:
   web:
     build:
       context: backend
-      dockerfile: Dockerfile
+      dockerfile: backend/docker/Dockerfile
     ports:
       - "8080:8080"
     volumes:
