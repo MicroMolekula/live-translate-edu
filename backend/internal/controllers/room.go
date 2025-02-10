@@ -11,7 +11,7 @@ type UserIdentity struct {
 	Room string `json:"room"`
 }
 
-func GetJoinToken(ctx *gin.Context) {
+func getJoinToken(ctx *gin.Context) {
 	var userIdentity UserIdentity
 	if err := ctx.Bind(&userIdentity); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{

@@ -10,7 +10,7 @@ type SpeechTranslatorController struct {
 	speechTranslator *recognize.SpeechTranslator
 }
 
-func NewRecognizerController() *SpeechTranslatorController {
+func newRecognizerController() *SpeechTranslatorController {
 	return &SpeechTranslatorController{
 		recognize.NewSpeechTranslator(
 			configs.Cfg.LiveKitApiUrl,
@@ -21,14 +21,14 @@ func NewRecognizerController() *SpeechTranslatorController {
 	}
 }
 
-func (rc *SpeechTranslatorController) Connect(ctx *gin.Context) {
+func (rc *SpeechTranslatorController) connect(ctx *gin.Context) {
 	go rc.speechTranslator.SpeechTranslate("myroom")
 	ctx.JSON(200, gin.H{
 		"success": true,
 	})
 }
 
-func (rc *SpeechTranslatorController) Disconnect(ctx *gin.Context) {
+func (rc *SpeechTranslatorController) disconnect(ctx *gin.Context) {
 	go rc.speechTranslator.Stop()
 	ctx.JSON(200, gin.H{
 		"success": true,
