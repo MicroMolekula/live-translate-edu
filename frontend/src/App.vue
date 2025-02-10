@@ -1,9 +1,8 @@
 <script setup>
-import LiveKitComponent from "@/components/LiveKitComponent.vue";
 </script>
 
 <template>
-<live-kit-component></live-kit-component>
+<router-view></router-view>
 </template>
 
 <style scoped>
