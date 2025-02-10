@@ -1,0 +1,21 @@
+version: "3.8"
+volumes:
+  postgres: ~
+services:
+  web:
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/app
+  postgres:
+    ports:
+      - "127.0.0.1:5433:5432"
+    image: postgres:alpine
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: pguser

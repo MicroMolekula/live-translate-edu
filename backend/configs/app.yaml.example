@@ -14,3 +14,11 @@ livekit:
   livekit_api_key: "devkey"
   livekit_api_secret: "secret"
   livekit_identity: "speech_translate_bot"
+
+database:
+  host: "postgres"
+  port: 5432
+  user: "pguser"
+  password: "pguser"
+  dbname: "db"
+  timezone: "Europe/Moscow"

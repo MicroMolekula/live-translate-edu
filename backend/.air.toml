@@ -1,0 +1,11 @@
+[build]
+cmd = "go build -o main ./cmd/http/main.go"
+bin = "main"
+full_bin = "CONFIG_PATH=./configs/app.yaml ./main >>tmp/info.log 2>>tmp/error.log"
+dir = "."
+include_ext = ["go"]
+exclude_dir = ["vendor"]
+run_after_build = "chmod +x main"
+
+[log]
+level = "debug"
