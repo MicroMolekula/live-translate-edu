@@ -63,31 +63,37 @@
   </div>
 </template>
 
-<script>
-import { ref } from 'vue';
+<script setup>
+import {ref} from "vue";
+import {useRouter} from "vue-router";
 
-export default {
-  data() {
-    return {
-      email: "",
-      password: "",
-      showErrorModal: false, // Для показа ошибки входа
-    };
-  },
-  methods: {
-    handleLogin() {
-      // Пример: проверка email и пароля
-      if (this.email === "admin@example.com" && this.password === "password123") {
-        alert("Вход выполнен!");
-      } else {
-        // Если данные неверные, показываем модальное окно с ошибкой
-        this.showErrorModal = true;
-      }
-    },
-  },
-};
+const email = ref("")
+const password = ref("")
+const showErrorModal = ref(false)
+
+const router = useRouter()
+
+async function handleLogin() {
+  let response = await fetch("http://localhost:8080/api/auth", {
+    method: 'POST',
+
+    body: JSON.stringify({
+      "login": email.value,
+      "password": password.value
+    })
+  })
+
+  if (response.status !== 200) {
+    showErrorModal.value = true
+    return
+  }
+
+  let result = await response.json()
+  localStorage.setItem("jwt", result.token)
+  await router.push('/me')
+}
 </script>
 
 <style scoped>
-/* Местные стили (например, для margin, padding) можно добавить сюда */
+
 </style>

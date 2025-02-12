@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/live-translate-edu/internal/services/room"
+	"github.com/live-translate-edu/internal/services"
 	"net/http"
 )
 
@@ -19,7 +19,7 @@ func getJoinToken(ctx *gin.Context) {
 			"error_message": err.Error(),
 		})
 	}
-	token, err := room.GenerateJoinToken(
+	token, err := services.GenerateJoinToken(
 		userIdentity.Room,
 		userIdentity.Name,
 	)

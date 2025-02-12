@@ -11,6 +11,7 @@ type Config struct {
 	Server   `yaml:"server"`
 	LiveKit  `yaml:"livekit"`
 	Database `yaml:"database"`
+	JWT      `yaml:"jwt"`
 }
 
 type Yandex struct {
@@ -39,6 +40,10 @@ type Database struct {
 	Password string `yaml:"password"`
 	DbName   string `yaml:"dbname"`
 	Timezone string `yaml:"timezone"`
+}
+
+type JWT struct {
+	Secret string `yaml:"secret"`
 }
 
 func NewConfig() *Config {

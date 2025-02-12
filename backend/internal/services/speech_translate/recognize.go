@@ -1,10 +1,9 @@
-package recognize
+package speech_translate
 
 import (
 	"bytes"
 	"context"
 	"fmt"
-	trnl "github.com/live-translate-edu/internal/services/translate"
 	lksdk "github.com/livekit/server-sdk-go/v2"
 	"github.com/livekit/server-sdk-go/v2/pkg/samplebuilder"
 	"github.com/pion/rtp/codecs"
@@ -148,7 +147,7 @@ func uniqueResult(ctx context.Context, channelIn <-chan *ResultRecognizer) (chan
 func translate(ctxCancel context.Context, channel <-chan string, out chan<- string) {
 	go func() {
 		defer close(out)
-		translateService, err := trnl.NewServ()
+		translateService, err := NewServ()
 		if err != nil {
 			fmt.Println("Ошибка создания сервиса перевода", err)
 			return

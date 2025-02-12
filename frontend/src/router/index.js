@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import LiveKitComponent from "@/components/LiveKitComponent.vue";
 import AuthComponent from "@/components/AuthComponent.vue";
+import MeComponent from "@/components/MeComponent.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -14,6 +15,11 @@ const router = createRouter({
             path: '/auth',
             component: AuthComponent,
             name: 'auth'
+        },
+        {
+            path: '/me',
+            component: MeComponent,
+            name: 'me'
         }
     ]
 })

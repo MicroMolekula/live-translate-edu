@@ -1,4 +1,4 @@
-package translate
+package speech_translate
 
 import (
 	"bytes"

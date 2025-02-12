@@ -3,16 +3,16 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/live-translate-edu/internal/configs"
-	"github.com/live-translate-edu/internal/services/recognize"
+	"github.com/live-translate-edu/internal/services/speech_translate"
 )
 
 type SpeechTranslatorController struct {
-	speechTranslator *recognize.SpeechTranslator
+	speechTranslator *speech_translate.SpeechTranslator
 }
 
 func newRecognizerController() *SpeechTranslatorController {
 	return &SpeechTranslatorController{
-		recognize.NewSpeechTranslator(
+		speech_translate.NewSpeechTranslator(
 			configs.Cfg.LiveKitApiUrl,
 			configs.Cfg.LiveKitApiKey,
 			configs.Cfg.LiveKitApiSecret,
