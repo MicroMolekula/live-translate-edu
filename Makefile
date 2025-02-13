@@ -15,3 +15,6 @@ log:
 
 error-log:
 	tail -f backend/tmp/error.log
+
+ps:
+	docker-compose ps

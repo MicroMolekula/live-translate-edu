@@ -19,3 +19,11 @@ services:
       - "8080:8080"
     volumes:
       - ./backend:/app
+  livekit:
+    image: livekit/livekit-server:latest
+    container_name: livekit-server
+    command: --dev --bind 0.0.0.0
+    ports:
+      - "0.0.0.0:7880:7880"
+    volumes:
+      - ./data:/data
