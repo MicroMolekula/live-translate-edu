@@ -6,7 +6,6 @@ import (
 )
 
 func InitRouter() *gin.Engine {
-
 	r := gin.Default()
 	r.Use(middleware.CORSMiddleware())
 	recognizerController := newRecognizerController()
@@ -21,11 +20,11 @@ func InitRouter() *gin.Engine {
 			authRequiredGroup.GET("/connect", recognizerController.connect)
 			authRequiredGroup.GET("/disconnect", recognizerController.disconnect)
 			authRequiredGroup.GET("/me", authController.me)
-			authRequiredGroup.POST("/token", getJoinToken)
+			authRequiredGroup.POST("/user/create", userController.create)
+			authRequiredGroup.GET("/users", authController.users)
 		}
 		apiGroup.POST("/auth", authController.auth)
-		apiGroup.POST("/user/create", userController.create)
-		apiGroup.GET("/users", authController.users)
+		apiGroup.POST("/token", getJoinToken)
 	}
 
 	return r

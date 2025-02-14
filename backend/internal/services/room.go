@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"github.com/live-translate-edu/internal/configs"
 	"github.com/livekit/protocol/auth"
 	"github.com/livekit/protocol/livekit"
 	lksdk "github.com/livekit/server-sdk-go/v2"
@@ -9,9 +10,9 @@ import (
 )
 
 func CreateRoom(roomName string) error {
-	hostURL := "http://localhost:7880"
-	apiKey := "devkey"
-	apiSecret := "secret"
+	hostURL := configs.Cfg.LiveKitApiUrl
+	apiKey := configs.Cfg.LiveKitApiKey
+	apiSecret := configs.Cfg.LiveKitApiSecret
 
 	roomClient := lksdk.NewRoomServiceClient(hostURL, apiKey, apiSecret)
 
@@ -26,9 +27,9 @@ func CreateRoom(roomName string) error {
 }
 
 func DeleteRoom(roomName string) error {
-	hostURL := "http://localhost:7880" // ex: https://project-123456.livekit.cloud
-	apiKey := "devkey"
-	apiSecret := "secret"
+	hostURL := configs.Cfg.LiveKitApiUrl
+	apiKey := configs.Cfg.LiveKitApiKey
+	apiSecret := configs.Cfg.LiveKitApiSecret
 
 	roomClient := lksdk.NewRoomServiceClient(hostURL, apiKey, apiSecret)
 
@@ -43,8 +44,8 @@ func DeleteRoom(roomName string) error {
 }
 
 func GenerateJoinToken(roomName, identity string) (string, error) {
-	apiKey := "devkey"
-	apiSecret := "secret"
+	apiKey := configs.Cfg.LiveKitApiKey
+	apiSecret := configs.Cfg.LiveKitApiSecret
 
 	token, err := getJoinToken(apiKey, apiSecret, roomName, identity)
 	if err != nil {
