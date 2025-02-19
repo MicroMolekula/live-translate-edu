@@ -11,11 +11,13 @@ import (
 
 type AuthController struct {
 	authService *services.AuthService
+	roomService *services.RoomService
 }
 
-func NewAuthController(service *services.AuthService) *AuthController {
+func NewAuthController(service *services.AuthService, room *services.RoomService) *AuthController {
 	return &AuthController{
 		authService: service,
+		roomService: room,
 	}
 }
 
@@ -38,9 +40,16 @@ func (ac *AuthController) Auth(ctx *gin.Context) {
 		return
 	}
 
+	roomToken, err := ac.roomService.GenerateJoinToken("myroom", request.Login)
+	if err != nil {
+		newErrorResponse(ctx, http.StatusInternalServerError, err, "Internal Server Error")
+		return
+	}
+
 	ctx.JSON(http.StatusOK, gin.H{
-		"token":   token,
-		"success": true,
+		"token":      token,
+		"room_token": roomToken,
+		"success":    true,
 	})
 }
 

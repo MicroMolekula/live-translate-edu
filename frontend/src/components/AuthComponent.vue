@@ -90,6 +90,7 @@ async function handleLogin() {
 
   let result = await response.json()
   localStorage.setItem("jwt", result.token)
+  localStorage.setItem("room_token", result.room_token)
   await router.push('/lesson')
 }
 </script>

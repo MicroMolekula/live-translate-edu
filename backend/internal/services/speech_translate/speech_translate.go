@@ -156,7 +156,6 @@ func (st *SpeechTranslator) translate(ctxCancel context.Context, channel <-chan 
 		ctx := context.Background()
 		for s := range channel {
 			result, err := translateService.TranslateText(ctx, s)
-			fmt.Println(result)
 			if err != nil {
 				fmt.Println("Ошибка перевода", err)
 			}

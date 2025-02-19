@@ -8,7 +8,7 @@ import {onMounted, ref} from "vue";
 import {useRouter} from "vue-router";
 
 const result = ref('')
-const token1 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDAwMzMzNTIsImlzcyI6ImRldmtleSIsIm5iZiI6MTczOTk0Njk1Miwic3ViIjoiaXZhbiIsInZpZGVvIjp7InJvb20iOiJteXJvb20iLCJyb29tSm9pbiI6dHJ1ZX19.gjRhzKQHPtfL9j8PyCUsc_7Nx2yAtK9SvfdzD7RzoFQ'
+const token1 = localStorage.getItem("room_token")
 
 const room = new Room()
 const router = useRouter()
@@ -31,13 +31,18 @@ async function getUser() {
 
 onMounted(async function () {
   await getUser()
+  await room.prepareConnection('http://localhost:7880', token1);
+  await room.connect('ws://localhost:7880', token1);
+  room.on(RoomEvent.DataReceived, function (payload, participant, kind) {
+    result.value = decoder.decode(payload)
+  })
 })
 
-async function connectionRTC() {
-  let token = token1
-  const decoder = new TextDecoder()
+const decoder = new TextDecoder()
 
-  await room.prepareConnection('http://localhost:7880', token);
+
+
+async function connectionRTC() {
   await fetch("http://localhost:8080/api/connect", {
     headers: {
       'Authorization': 'Bearer ' + localStorage.getItem('jwt')
@@ -45,11 +50,6 @@ async function connectionRTC() {
   })
   room
     .on(RoomEvent.TrackSubscribed, handleTrackSubscribed)
-      .on(RoomEvent.DataReceived, function (payload, participant, kind) {
-        result.value = decoder.decode(payload)
-      })
-  await room.connect('ws://localhost:7880', token);
-  console.log('connected to room', room.activeSpeakers);
   navigator.mediaDevices.getUserMedia({
     audio: {
       sampleRate: 48000
