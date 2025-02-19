@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/live-translate-edu/internal/configs"
 	"github.com/live-translate-edu/internal/services/speech_translate"
 )
 
@@ -10,25 +9,20 @@ type SpeechTranslatorController struct {
 	speechTranslator *speech_translate.SpeechTranslator
 }
 
-func newRecognizerController() *SpeechTranslatorController {
+func NewRecognizerController(speechTranslator *speech_translate.SpeechTranslator) *SpeechTranslatorController {
 	return &SpeechTranslatorController{
-		speech_translate.NewSpeechTranslator(
-			configs.Cfg.LiveKitApiUrl,
-			configs.Cfg.LiveKitApiKey,
-			configs.Cfg.LiveKitApiSecret,
-			configs.Cfg.LiveKitApiSecret,
-		),
+		speechTranslator: speechTranslator,
 	}
 }
 
-func (rc *SpeechTranslatorController) connect(ctx *gin.Context) {
+func (rc *SpeechTranslatorController) Connect(ctx *gin.Context) {
 	go rc.speechTranslator.SpeechTranslate("myroom")
 	ctx.JSON(200, gin.H{
 		"success": true,
 	})
 }
 
-func (rc *SpeechTranslatorController) disconnect(ctx *gin.Context) {
+func (rc *SpeechTranslatorController) Disconnect(ctx *gin.Context) {
 	go rc.speechTranslator.Stop()
 	ctx.JSON(200, gin.H{
 		"success": true,

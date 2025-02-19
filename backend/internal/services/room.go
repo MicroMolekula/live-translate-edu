@@ -9,10 +9,20 @@ import (
 	"time"
 )
 
-func CreateRoom(roomName string) error {
-	hostURL := configs.Cfg.LiveKitApiUrl
-	apiKey := configs.Cfg.LiveKitApiKey
-	apiSecret := configs.Cfg.LiveKitApiSecret
+type RoomService struct {
+	cfg *configs.Config
+}
+
+func NewRoomService(cfg *configs.Config) *RoomService {
+	return &RoomService{
+		cfg: cfg,
+	}
+}
+
+func (r *RoomService) CreateRoom(roomName string) error {
+	hostURL := r.cfg.LiveKitApiUrl
+	apiKey := r.cfg.LiveKitApiKey
+	apiSecret := r.cfg.LiveKitApiSecret
 
 	roomClient := lksdk.NewRoomServiceClient(hostURL, apiKey, apiSecret)
 
@@ -26,10 +36,10 @@ func CreateRoom(roomName string) error {
 	return nil
 }
 
-func DeleteRoom(roomName string) error {
-	hostURL := configs.Cfg.LiveKitApiUrl
-	apiKey := configs.Cfg.LiveKitApiKey
-	apiSecret := configs.Cfg.LiveKitApiSecret
+func (r *RoomService) DeleteRoom(roomName string) error {
+	hostURL := r.cfg.LiveKitApiUrl
+	apiKey := r.cfg.LiveKitApiKey
+	apiSecret := r.cfg.LiveKitApiSecret
 
 	roomClient := lksdk.NewRoomServiceClient(hostURL, apiKey, apiSecret)
 
@@ -43,18 +53,18 @@ func DeleteRoom(roomName string) error {
 	return nil
 }
 
-func GenerateJoinToken(roomName, identity string) (string, error) {
-	apiKey := configs.Cfg.LiveKitApiKey
-	apiSecret := configs.Cfg.LiveKitApiSecret
+func (r *RoomService) GenerateJoinToken(roomName, identity string) (string, error) {
+	apiKey := r.cfg.LiveKitApiKey
+	apiSecret := r.cfg.LiveKitApiSecret
 
-	token, err := getJoinToken(apiKey, apiSecret, roomName, identity)
+	token, err := r.getJoinToken(apiKey, apiSecret, roomName, identity)
 	if err != nil {
 		return "", err
 	}
 	return token, nil
 }
 
-func getJoinToken(apiKey, apiSecret, room, identity string) (string, error) {
+func (r *RoomService) getJoinToken(apiKey, apiSecret, room, identity string) (string, error) {
 	at := auth.NewAccessToken(apiKey, apiSecret)
 	grant := &auth.VideoGrant{
 		RoomJoin: true,

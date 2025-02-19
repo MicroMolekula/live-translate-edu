@@ -8,7 +8,7 @@ import {onMounted, ref} from "vue";
 import {useRouter} from "vue-router";
 
 const result = ref('')
-const token1 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mzk1MzE0NjYsImlzcyI6ImRldmtleSIsIm5iZiI6MTczOTQ0NTA2Niwic3ViIjoiTWlzaGEiLCJ2aWRlbyI6eyJyb29tIjoibXlyb29tIiwicm9vbUpvaW4iOnRydWV9fQ.BR7kqKacZIY2h0M9yC_vdhskkcvl1w04rvUgl64kfJo'
+const token1 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDAwMzMzNTIsImlzcyI6ImRldmtleSIsIm5iZiI6MTczOTk0Njk1Miwic3ViIjoiaXZhbiIsInZpZGVvIjp7InJvb20iOiJteXJvb20iLCJyb29tSm9pbiI6dHJ1ZX19.gjRhzKQHPtfL9j8PyCUsc_7Nx2yAtK9SvfdzD7RzoFQ'
 
 const room = new Room()
 const router = useRouter()

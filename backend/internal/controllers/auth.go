@@ -3,7 +3,6 @@ package controllers
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"github.com/live-translate-edu/internal/configs"
 	"github.com/live-translate-edu/internal/dto"
 	"github.com/live-translate-edu/internal/services"
 	"net/http"
@@ -11,19 +10,16 @@ import (
 )
 
 type AuthController struct {
-	jwtSecret   string
 	authService *services.AuthService
 }
 
-func newAuthController() *AuthController {
-	as := services.NewAuthService()
+func NewAuthController(service *services.AuthService) *AuthController {
 	return &AuthController{
-		jwtSecret:   configs.Cfg.JWT.Secret,
-		authService: as,
+		authService: service,
 	}
 }
 
-func (ac *AuthController) auth(ctx *gin.Context) {
+func (ac *AuthController) Auth(ctx *gin.Context) {
 	var request dto.AuthDto
 
 	if err := ctx.ShouldBindJSON(&request); err != nil {
@@ -48,7 +44,7 @@ func (ac *AuthController) auth(ctx *gin.Context) {
 	})
 }
 
-func (ac *AuthController) me(ctx *gin.Context) {
+func (ac *AuthController) Me(ctx *gin.Context) {
 	user, ok := ctx.Value("user").(*dto.UserDTO)
 	if !ok {
 		newErrorResponse(ctx, http.StatusInternalServerError, errors.New("internal server error"), "Error server")
@@ -56,7 +52,7 @@ func (ac *AuthController) me(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, user)
 }
 
-func (ac *AuthController) authRequiredMiddleware() gin.HandlerFunc {
+func (ac *AuthController) AuthRequiredMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authHeader := ctx.Request.Header.Get("Authorization")
 		tokenString, ok := strings.CutPrefix(authHeader, "Bearer ")
@@ -82,7 +78,7 @@ func (ac *AuthController) authRequiredMiddleware() gin.HandlerFunc {
 	}
 }
 
-func (ac *AuthController) users(ctx *gin.Context) {
+func (ac *AuthController) Users(ctx *gin.Context) {
 	users, err := ac.authService.AllUsers()
 	if err != nil {
 		newErrorResponse(ctx, http.StatusInternalServerError, err, "Internal Server Error")

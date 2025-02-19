@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"github.com/live-translate-edu/internal/database"
 	"github.com/live-translate-edu/internal/models"
 	"gorm.io/gorm"
 )
@@ -10,8 +9,8 @@ type UserRepository struct {
 	db *gorm.DB
 }
 
-func NewUserRepository() *UserRepository {
-	return &UserRepository{db: database.GetDb()}
+func NewUserRepository(db *gorm.DB) *UserRepository {
+	return &UserRepository{db: db}
 }
 
 func (ur *UserRepository) FindAll() ([]*models.User, error) {

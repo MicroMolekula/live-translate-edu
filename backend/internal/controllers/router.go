@@ -5,27 +5,41 @@ import (
 	"github.com/live-translate-edu/internal/controllers/middleware"
 )
 
-func InitRouter() *gin.Engine {
-	r := gin.Default()
-	r.Use(middleware.CORSMiddleware())
-	recognizerController := newRecognizerController()
-	authController := newAuthController()
-	userController := newUserController()
+type Router struct {
+	auth            *AuthController
+	room            *RoomController
+	speechTranslate *SpeechTranslatorController
+	user            *UserController
+}
 
-	apiGroup := r.Group("/api")
+func NewRouter(
+	auth *AuthController,
+	room *RoomController,
+	speechTranslate *SpeechTranslatorController,
+	user *UserController) *Router {
+	return &Router{
+		auth:            auth,
+		room:            room,
+		speechTranslate: speechTranslate,
+		user:            user,
+	}
+}
+
+func (r *Router) InitRoutes(engine *gin.Engine) {
+	engine.Use(middleware.CORSMiddleware())
+
+	apiGroup := engine.Group("/api")
 	{
 		authRequiredGroup := apiGroup.Group("")
-		authRequiredGroup.Use(authController.authRequiredMiddleware())
+		authRequiredGroup.Use(r.auth.AuthRequiredMiddleware())
 		{
-			authRequiredGroup.GET("/connect", recognizerController.connect)
-			authRequiredGroup.GET("/disconnect", recognizerController.disconnect)
-			authRequiredGroup.GET("/me", authController.me)
-			authRequiredGroup.POST("/user/create", userController.create)
-			authRequiredGroup.GET("/users", authController.users)
+			authRequiredGroup.GET("/connect", r.speechTranslate.Connect)
+			authRequiredGroup.GET("/disconnect", r.speechTranslate.Disconnect)
+			authRequiredGroup.GET("/me", r.auth.Me)
+			authRequiredGroup.POST("/user/create", r.user.Create)
+			authRequiredGroup.GET("/users", r.auth.Users)
 		}
-		apiGroup.POST("/auth", authController.auth)
-		apiGroup.POST("/token", getJoinToken)
+		apiGroup.POST("/auth", r.auth.Auth)
+		apiGroup.POST("/token", r.room.GetJoinToken)
 	}
-
-	return r
 }

@@ -1,189 +1,171 @@
 package speech_translate
 
 import (
-	"bytes"
 	"context"
+	"crypto/tls"
 	"fmt"
-	lksdk "github.com/livekit/server-sdk-go/v2"
-	"github.com/livekit/server-sdk-go/v2/pkg/samplebuilder"
-	"github.com/pion/rtp/codecs"
-	"github.com/pion/webrtc/v4"
-	"github.com/pion/webrtc/v4/pkg/media/oggwriter"
-	"time"
+	"github.com/live-translate-edu/cloudapi/output/github.com/yandex-cloud/go-genproto/yandex/cloud/ai/stt/v3"
+	"github.com/live-translate-edu/internal/configs"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+	"io"
+	"log"
+	"sync"
 )
 
-type SpeechTranslator struct {
-	url        string
-	apiKey     string
-	identity   string
-	apiSecret  string
-	ctx        context.Context
-	cancelFunc context.CancelFunc
+type Recognizer struct {
+	cfg  *configs.Config
+	lock sync.RWMutex
 }
 
-func NewSpeechTranslator(url, apiKey, apiSecret, identity string) *SpeechTranslator {
-	ctx, cancel := context.WithCancel(context.Background())
-	return &SpeechTranslator{
-		url:        url,
-		apiKey:     apiKey,
-		apiSecret:  apiSecret,
-		identity:   identity,
-		ctx:        ctx,
-		cancelFunc: cancel,
+func NewRecognizer(cfg *configs.Config) *Recognizer {
+	return &Recognizer{cfg: cfg}
+}
+
+type ResultRecognizer struct {
+	StartTime int
+	EndTime   int
+	Text      string
+}
+
+func NewResult(startTime, endTime int64, text string) *ResultRecognizer {
+	return &ResultRecognizer{
+		StartTime: int(startTime),
+		EndTime:   int(endTime),
+		Text:      text,
 	}
 }
 
-func (rec *SpeechTranslator) SpeechTranslate(roomName string) {
-	resultTranslate := make(chan string)
-	var contextCancel, cancel = context.WithCancel(context.Background())
-	recognizer := NewRecognizer()
-	roomCB := &lksdk.RoomCallback{
-		ParticipantCallback: lksdk.ParticipantCallback{
-			OnTrackSubscribed: func(track *webrtc.TrackRemote, publication *lksdk.RemoteTrackPublication, rp *lksdk.RemoteParticipant) {
-				translate(
-					contextCancel,
-					uniqueResult(
-						contextCancel,
-						recognizer.SpeechKitRecognize(
-							contextCancel,
-							steamTrackToOggOpus(contextCancel, track),
-						),
-					),
-					resultTranslate,
-				)
+func (rec *Recognizer) initOptions() *stt.StreamingOptions {
+	return &stt.StreamingOptions{
+		RecognitionModel: &stt.RecognitionModelOptions{
+			AudioFormat: &stt.AudioFormatOptions{
+				AudioFormat: &stt.AudioFormatOptions_ContainerAudio{
+					ContainerAudio: &stt.ContainerAudio{
+						ContainerAudioType: stt.ContainerAudio_OGG_OPUS,
+					},
+				},
 			},
+			TextNormalization: &stt.TextNormalizationOptions{
+				TextNormalization: stt.TextNormalizationOptions_TEXT_NORMALIZATION_ENABLED,
+				ProfanityFilter:   true,
+				LiteratureText:    false,
+			},
+			LanguageRestriction: &stt.LanguageRestrictionOptions{
+				RestrictionType: stt.LanguageRestrictionOptions_WHITELIST,
+				LanguageCode:    []string{"ru-RU"},
+			},
+			AudioProcessingType: stt.RecognitionModelOptions_REAL_TIME,
 		},
 	}
-	room, err := lksdk.ConnectToRoom(rec.url, lksdk.ConnectInfo{
-		APIKey:              rec.apiKey,
-		APISecret:           rec.apiSecret,
-		RoomName:            roomName,
-		ParticipantIdentity: rec.identity,
-	}, roomCB)
+}
 
+func (rec *Recognizer) connectToGrpc() (*grpc.ClientConn, error) {
+	rec.lock.RLock()
+	defer rec.lock.RUnlock()
+	return grpc.NewClient(
+		rec.cfg.AddressSpeechKit,
+		grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{InsecureSkipVerify: true})),
+		grpc.WithPerRPCCredentials(&tokenAuth{fmt.Sprintf("Api-Key %s", rec.cfg.SpeechKitToken)}),
+		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(4*1024*1025)),
+	)
+}
+
+func (rec *Recognizer) initRecognizerClient(grpcConn *grpc.ClientConn) (grpc.BidiStreamingClient[stt.StreamingRequest, stt.StreamingResponse], error) {
+	client := stt.NewRecognizerClient(grpcConn)
+	ctx := context.Background()
+	stream, err := client.RecognizeStreaming(ctx)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-
-	defer room.Disconnect()
-
-	go outputResult(contextCancel, room, resultTranslate)
-
-	select {
-	case <-rec.ctx.Done():
-		cancel()
+	err = stream.Send(&stt.StreamingRequest{
+		Event: &stt.StreamingRequest_SessionOptions{
+			SessionOptions: rec.initOptions(),
+		},
+	})
+	if err != nil {
+		return nil, err
 	}
+	return stream, nil
 }
 
-func (rec *SpeechTranslator) Stop() {
-	rec.cancelFunc()
-	time.Sleep(100 * time.Millisecond)
-	rec.ctx, rec.cancelFunc = context.WithCancel(context.Background())
-}
-
-func steamTrackToOggOpus(ctx context.Context, track *webrtc.TrackRemote) (channelOut chan []byte) {
-	channelOut = make(chan []byte)
+func (rec *Recognizer) SpeechKitRecognize(ctxCancel context.Context, channelIn <-chan []byte) (channelOut chan *ResultRecognizer) {
+	channelOut = make(chan *ResultRecognizer)
 	go func() {
+		defer close(channelOut)
 		defer func() {
-			close(channelOut)
-			if r := recover(); r != nil {
-				fmt.Println("Recovered in steamTrackToOggOpus", r)
-			}
-		}()
-		sb := samplebuilder.New(200, &codecs.OpusPacket{}, 48000)
-		oggBuffer := new(bytes.Buffer)
-		writer, err := oggwriter.NewWith(oggBuffer, track.Codec().ClockRate, track.Codec().Channels)
-		if err != nil {
-			fmt.Println("Ошибка создания врайтера", err)
-		}
-		for {
-			pkt, _, err := track.ReadRTP()
-			if err != nil {
-				fmt.Println("Ошибка чтения данных из трека", err)
-			}
-			sb.Push(pkt)
-			for _, p := range sb.PopPackets() {
-				if err := writer.WriteRTP(p); err != nil {
-					fmt.Println("Ошибка записи RTP в OGG:", err)
-				}
-			}
-			if len(oggBuffer.Bytes()) >= 2046 {
-				select {
-				case channelOut <- oggBuffer.Bytes():
-				case <-ctx.Done():
-					return
-				}
-				oggBuffer.Reset()
-			}
-		}
-	}()
-	return
-}
-
-func uniqueResult(ctx context.Context, channelIn <-chan *ResultRecognizer) (channelOut chan string) {
-	channelOut = make(chan string)
-	go func() {
-		defer func() {
-			close(channelOut)
 			if err := recover(); err != nil {
-				fmt.Println("Recover uniqueResult", err)
+				fmt.Println("[ERR] grpc", err)
 			}
 		}()
-		var currentResult = ""
-		for r := range channelIn {
-			if currentResult != r.Text {
-				currentResult = r.Text
+		grpcConn, err := rec.connectToGrpc()
+		if err != nil {
+			fmt.Println("Ошибка подключения к grpc", err)
+		}
+		defer func() {
+			if err = grpcConn.Close(); err != nil {
+				fmt.Println("Ошибка закрытия подключения к grpc: ", err)
+			}
+		}()
+		stream, err := rec.initRecognizerClient(grpcConn)
+		if err != nil {
+			fmt.Println("Ошибка инициализации клиента: ", err)
+		}
+		fmt.Println("Начало распознавания")
+		go func() {
+			defer func() {
+				defer func() {
+					if err := recover(); err != nil {
+						fmt.Println("[ERR] grpc", err)
+					}
+				}()
+				if err := stream.CloseSend(); err != nil {
+					fmt.Println(err)
+				}
+			}()
+			for audioData := range channelIn {
 				select {
-				case channelOut <- r.Text:
-				case <-ctx.Done():
+				case <-ctxCancel.Done():
 					return
+				default:
+					err := stream.Send(&stt.StreamingRequest{
+						Event: &stt.StreamingRequest_Chunk{
+							Chunk: &stt.AudioChunk{Data: audioData},
+						},
+					})
+					if err != nil {
+						fmt.Println("Ошибка отправки аудио в gRPC:", err)
+						return
+					}
+				}
+			}
+		}()
+
+		for {
+			resp, err := stream.Recv()
+			if err == io.EOF {
+				fmt.Println("Конец распознавания", err)
+				break
+			}
+			if err != nil {
+				log.Println("Ошибка получения ответа: ", err)
+				break
+			}
+
+			if resp.GetPartial() != nil {
+				if resp.GetPartial().Alternatives != nil {
+					select {
+					case channelOut <- NewResult(
+						resp.GetPartial().Alternatives[0].GetStartTimeMs(),
+						resp.GetPartial().Alternatives[0].GetEndTimeMs(),
+						resp.GetPartial().Alternatives[0].Text,
+					):
+					case <-ctxCancel.Done():
+						return
+					}
 				}
 			}
 		}
 	}()
 	return
-}
-
-func translate(ctxCancel context.Context, channel <-chan string, out chan<- string) {
-	go func() {
-		defer close(out)
-		translateService, err := NewServ()
-		if err != nil {
-			fmt.Println("Ошибка создания сервиса перевода", err)
-			return
-		}
-		defer func() {
-			err := translateService.CloseConn()
-			if err != nil {
-				fmt.Println(err)
-			}
-		}()
-		ctx := context.Background()
-		for s := range channel {
-			result, err := translateService.TranslateText(ctx, s)
-			fmt.Println(result)
-			if err != nil {
-				fmt.Println("Ошибка перевода", err)
-			}
-			select {
-			case <-ctxCancel.Done():
-				return
-			case out <- result:
-			}
-		}
-	}()
-}
-
-func outputResult(ctx context.Context, room *lksdk.Room, in <-chan string) {
-	for r := range in {
-		select {
-		case <-ctx.Done():
-			return
-		default:
-			err := room.LocalParticipant.PublishDataPacket(lksdk.UserData([]byte(r)))
-			if err != nil {
-				fmt.Println(err)
-			}
-		}
-	}
 }

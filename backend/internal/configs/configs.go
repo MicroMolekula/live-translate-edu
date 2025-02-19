@@ -1,8 +1,9 @@
 package configs
 
 import (
+	"errors"
+	"fmt"
 	"gopkg.in/yaml.v3"
-	"log"
 	"os"
 )
 
@@ -46,24 +47,19 @@ type JWT struct {
 	Secret string `yaml:"secret"`
 }
 
-func NewConfig() *Config {
-	return &Config{}
-}
-
-var Cfg *Config
-
-func LoadConfig() {
-	Cfg = NewConfig()
+func NewConfig() (*Config, error) {
+	cfg := &Config{}
 	yamlPath := os.Getenv("CONFIG_PATH")
 	if yamlPath == "" {
-		log.Fatal("CONFIG_PATH environment variable not set")
+		return nil, errors.New("config file environment variable not set")
 	}
 	yamlFile, err := os.ReadFile(yamlPath)
 	if err != nil {
-		log.Fatalf("Error load yaml file: %s", err)
+		return nil, errors.New(fmt.Sprintf("error read config file: %s", err))
 	}
-	err = yaml.Unmarshal(yamlFile, Cfg)
+	err = yaml.Unmarshal(yamlFile, cfg)
 	if err != nil {
-		log.Fatalf("Error parse yaml file: %s", err)
+		return nil, errors.New(fmt.Sprintf("error parse config file: %s", err))
 	}
+	return cfg, nil
 }

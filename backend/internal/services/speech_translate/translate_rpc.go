@@ -16,14 +16,14 @@ type TranslateServ struct {
 	lock *sync.RWMutex
 }
 
-func NewServ() (*TranslateServ, error) {
+func NewTranslateServ(cfg *configs.Config) (*TranslateServ, error) {
 	mtx := &sync.RWMutex{}
 	mtx.RLock()
 	defer mtx.RUnlock()
 	grpcConn, err := grpc.NewClient(
-		configs.Cfg.AddressTranslate,
+		cfg.AddressTranslate,
 		grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{InsecureSkipVerify: true})),
-		grpc.WithPerRPCCredentials(&tokenAuth{fmt.Sprintf("Api-Key %s", configs.Cfg.TranslateToken)}),
+		grpc.WithPerRPCCredentials(&tokenAuth{fmt.Sprintf("Api-Key %s", cfg.TranslateToken)}),
 		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(1024*1024)),
 	)
 	if err != nil {

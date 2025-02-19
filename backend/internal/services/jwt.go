@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/live-translate-edu/internal/configs"
 	"github.com/live-translate-edu/internal/dto"
 	"time"
 )
@@ -21,11 +22,11 @@ type DataJwt struct {
 }
 
 type JWTService struct {
-	jwtSecret string
+	cfg *configs.Config
 }
 
-func NewJwtService(jwtSecret string) *JWTService {
-	return &JWTService{jwtSecret: jwtSecret}
+func NewJwtService(cfg *configs.Config) *JWTService {
+	return &JWTService{cfg: cfg}
 }
 
 func (s *JWTService) GenerateTokenByUser(user *dto.UserFullDTO, ttl int) (string, error) {
@@ -37,7 +38,7 @@ func (s *JWTService) GenerateTokenByUser(user *dto.UserFullDTO, ttl int) (string
 		Id:       user.Id,
 	})
 
-	token, err := jwtToken.SignedString([]byte(s.jwtSecret))
+	token, err := jwtToken.SignedString([]byte(s.cfg.JWT.Secret))
 	if err != nil {
 		return "", err
 	}
@@ -46,7 +47,7 @@ func (s *JWTService) GenerateTokenByUser(user *dto.UserFullDTO, ttl int) (string
 
 func (s *JWTService) ParseToken(tokenString string) (*DataJwt, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &DataJwt{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(s.jwtSecret), nil
+		return []byte(s.cfg.JWT.Secret), nil
 	})
 
 	if err != nil {
