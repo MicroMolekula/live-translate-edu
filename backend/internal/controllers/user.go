@@ -11,13 +11,13 @@ type UserController struct {
 	userService *services.UserService
 }
 
-func newUserController() *UserController {
+func NewUserController(userService *services.UserService) *UserController {
 	return &UserController{
-		userService: services.NewUserService(),
+		userService: userService,
 	}
 }
 
-func (uc *UserController) create(ctx *gin.Context) {
+func (uc *UserController) Create(ctx *gin.Context) {
 	var request *dto.UserCreateDTO
 	if err := ctx.ShouldBind(&request); err != nil {
 		newErrorResponse(ctx, http.StatusBadRequest, err, "Bad request")

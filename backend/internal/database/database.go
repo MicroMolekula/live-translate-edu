@@ -1,21 +1,18 @@
 package database
 
 import (
+	"errors"
 	"fmt"
 	"github.com/live-translate-edu/internal/configs"
 	"github.com/live-translate-edu/internal/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
-	"time"
 )
 
-var db *gorm.DB
-
-func Init() *gorm.DB {
-	dbConn, err := gorm.Open(postgres.Open(makeConfigString()), &gorm.Config{})
+func NewDB(cfg *configs.Config) (*gorm.DB, error) {
+	dbConn, err := gorm.Open(postgres.Open(makeConfigString(cfg)), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("Database connection error: %s", err)
+		return nil, errors.New(fmt.Sprint("database connection error: ", err))
 	}
 
 	err = dbConn.AutoMigrate(
@@ -28,36 +25,20 @@ func Init() *gorm.DB {
 		models.MessageContent{},
 	)
 	if err != nil {
-		log.Fatalf("Database migration error: %s", err)
+		return nil, errors.New(fmt.Sprint("database migration error: ", err))
 	}
 
-	return dbConn
+	return dbConn, nil
 }
 
-func GetDb() *gorm.DB {
-	if db == nil {
-		db = Init()
-		sleep := time.Duration(1)
-		for db == nil {
-			sleep *= 2
-			time.Sleep(sleep * time.Second)
-			db = Init()
-			if sleep >= 10 {
-				break
-			}
-		}
-	}
-	return db
-}
-
-func makeConfigString() string {
+func makeConfigString(cfg *configs.Config) string {
 	return fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable TimeZone=%s",
-		configs.Cfg.Database.Host,
-		configs.Cfg.Database.Port,
-		configs.Cfg.Database.User,
-		configs.Cfg.Database.Password,
-		configs.Cfg.Database.DbName,
-		configs.Cfg.Database.Timezone,
+		cfg.Database.Host,
+		cfg.Database.Port,
+		cfg.Database.User,
+		cfg.Database.Password,
+		cfg.Database.DbName,
+		cfg.Database.Timezone,
 	)
 }

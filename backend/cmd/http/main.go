@@ -1,20 +1,37 @@
 package main
 
 import (
-	"fmt"
-	"github.com/live-translate-edu/internal/configs"
-	"github.com/live-translate-edu/internal/controllers"
-	"github.com/live-translate-edu/internal/database"
+	"github.com/live-translate-edu/internal/di"
+	"github.com/live-translate-edu/internal/server"
 	"log"
+	"net/http"
+	_ "net/http/pprof"
+	"time"
 )
 
 func main() {
-	configs.LoadConfig()
-	database.Init()
+	di.InitContainer()
 
-	r := controllers.InitRouter()
-	err := r.Run(fmt.Sprintf(":%d", configs.Cfg.ServerPort))
+	go func() {
+		http.ListenAndServe(":8888", nil)
+	}()
+
+	go func() {
+		timer := time.NewTicker(5 * time.Second)
+		for {
+			select {
+			case <-timer.C:
+
+			default:
+			}
+		}
+	}()
+
+	err := di.Container.Invoke(func(server *server.Server) {
+		server.Run()
+	})
+
 	if err != nil {
-		log.Fatalf("Ошибка при запуске http сервера: %s", err)
+		log.Fatal(err)
 	}
 }

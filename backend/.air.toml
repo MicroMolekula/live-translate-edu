@@ -5,7 +5,7 @@ full_bin = "CONFIG_PATH=./configs/app.yaml ./main >>tmp/info.log 2>>tmp/error.lo
 dir = "."
 include_ext = ["go"]
 exclude_dir = ["vendor"]
-run_after_build = "chmod +x main"
+run_after_build = "chmod +x main; go tool pprof main http://0.0.0.0:8888/debug/pprof/profile;"
 
 [log]
 level = "debug"

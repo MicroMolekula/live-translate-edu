@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"github.com/live-translate-edu/internal/configs"
 	"github.com/live-translate-edu/internal/dto"
 	"github.com/live-translate-edu/internal/repository"
 	"github.com/live-translate-edu/internal/utils"
@@ -19,11 +18,14 @@ type AuthService struct {
 	userService *UserService
 }
 
-func NewAuthService() *AuthService {
+func NewAuthService(
+	jwtService *JWTService,
+	userRepository *repository.UserRepository,
+	userService *UserService) *AuthService {
 	return &AuthService{
-		jwtService:  NewJwtService(configs.Cfg.JWT.Secret),
-		repository:  repository.NewUserRepository(),
-		userService: NewUserService(),
+		jwtService:  jwtService,
+		repository:  userRepository,
+		userService: userService,
 	}
 }
 

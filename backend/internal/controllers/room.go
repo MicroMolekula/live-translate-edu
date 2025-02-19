@@ -11,7 +11,17 @@ type UserIdentity struct {
 	Room string `json:"room"`
 }
 
-func getJoinToken(ctx *gin.Context) {
+type RoomController struct {
+	roomService *services.RoomService
+}
+
+func NewRoomController(roomService *services.RoomService) *RoomController {
+	return &RoomController{
+		roomService: roomService,
+	}
+}
+
+func (rc *RoomController) GetJoinToken(ctx *gin.Context) {
 	var userIdentity UserIdentity
 	if err := ctx.Bind(&userIdentity); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -19,7 +29,7 @@ func getJoinToken(ctx *gin.Context) {
 			"error_message": err.Error(),
 		})
 	}
-	token, err := services.GenerateJoinToken(
+	token, err := rc.roomService.GenerateJoinToken(
 		userIdentity.Room,
 		userIdentity.Name,
 	)
