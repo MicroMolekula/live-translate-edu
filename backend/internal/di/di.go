@@ -58,8 +58,6 @@ func getServices() []interface{} {
 		services.NewRoomService,
 		services.NewUserService,
 		speech_translate.NewSpeechTranslator,
-		speech_translate.NewTranslateServ,
-		speech_translate.NewRecognizer,
 	}
 }
 

@@ -12,32 +12,31 @@ import (
 )
 
 type TranslateServ struct {
-	cfg  *configs.Config
+	Conn *grpc.ClientConn
 	lock *sync.RWMutex
-	conn *grpc.ClientConn
 }
 
-func NewTranslateServ(cfg *configs.Config) *TranslateServ {
-	return &TranslateServ{
-		cfg:  cfg,
-		lock: &sync.RWMutex{},
-	}
-}
-
-func (t *TranslateServ) TranslateText(ctx context.Context, text string) (string, error) {
-	t.lock.RLock()
-	defer t.lock.RUnlock()
+func NewTranslateServ(cfg *configs.Config) (*TranslateServ, error) {
+	mtx := &sync.RWMutex{}
+	mtx.RLock()
+	defer mtx.RUnlock()
 	grpcConn, err := grpc.NewClient(
-		t.cfg.AddressTranslate,
+		cfg.AddressTranslate,
 		grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{InsecureSkipVerify: true})),
-		grpc.WithPerRPCCredentials(&tokenAuth{fmt.Sprintf("Api-Key %s", t.cfg.TranslateToken)}),
+		grpc.WithPerRPCCredentials(&tokenAuth{fmt.Sprintf("Api-Key %s", cfg.TranslateToken)}),
 		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(1024*1024)),
 	)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	t.conn = grpcConn
-	client := yandexTranslate.NewTranslationServiceClient(t.conn)
+	return &TranslateServ{
+		Conn: grpcConn,
+		lock: mtx,
+	}, nil
+}
+
+func (t *TranslateServ) TranslateText(ctx context.Context, text string) (string, error) {
+	client := yandexTranslate.NewTranslationServiceClient(t.Conn)
 	response, err := client.Translate(ctx, &yandexTranslate.TranslateRequest{
 		SourceLanguageCode: "ru",
 		TargetLanguageCode: "en",
@@ -50,7 +49,7 @@ func (t *TranslateServ) TranslateText(ctx context.Context, text string) (string,
 }
 
 func (t *TranslateServ) CloseConn() error {
-	err := t.conn.Close()
+	err := t.Conn.Close()
 	if err != nil {
 		return err
 	}

@@ -14,27 +14,24 @@ import (
 )
 
 type SpeechTranslator struct {
-	cfg              *configs.Config
-	ctx              context.Context
-	cancelFunc       context.CancelFunc
-	translateService *TranslateServ
-	recognizer       *Recognizer
+	cfg        *configs.Config
+	ctx        context.Context
+	cancelFunc context.CancelFunc
 }
 
-func NewSpeechTranslator(cfg *configs.Config, translateService *TranslateServ, recognizer *Recognizer) *SpeechTranslator {
+func NewSpeechTranslator(cfg *configs.Config) *SpeechTranslator {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &SpeechTranslator{
-		cfg:              cfg,
-		ctx:              ctx,
-		cancelFunc:       cancel,
-		translateService: translateService,
-		recognizer:       recognizer,
+		cfg:        cfg,
+		ctx:        ctx,
+		cancelFunc: cancel,
 	}
 }
 
 func (st *SpeechTranslator) SpeechTranslate(roomName string) {
 	resultTranslate := make(chan string)
 	var contextCancel, cancel = context.WithCancel(context.Background())
+	recognizer := NewRecognizer(st.cfg)
 	roomCB := &lksdk.RoomCallback{
 		ParticipantCallback: lksdk.ParticipantCallback{
 			OnTrackSubscribed: func(track *webrtc.TrackRemote, publication *lksdk.RemoteTrackPublication, rp *lksdk.RemoteParticipant) {
@@ -42,7 +39,7 @@ func (st *SpeechTranslator) SpeechTranslate(roomName string) {
 					contextCancel,
 					uniqueResult(
 						contextCancel,
-						st.recognizer.SpeechKitRecognize(
+						recognizer.SpeechKitRecognize(
 							contextCancel,
 							steamTrackToOggOpus(contextCancel, track),
 						),
@@ -145,15 +142,21 @@ func uniqueResult(ctx context.Context, channelIn <-chan *ResultRecognizer) (chan
 func (st *SpeechTranslator) translate(ctxCancel context.Context, channel <-chan string, out chan<- string) {
 	go func() {
 		defer close(out)
+		translateService, err := NewTranslateServ(st.cfg)
+		if err != nil {
+			fmt.Println("Ошибка создания сервиса перевода", err)
+			return
+		}
 		defer func() {
-			err := st.translateService.CloseConn()
+			err := translateService.CloseConn()
 			if err != nil {
 				fmt.Println(err)
 			}
 		}()
 		ctx := context.Background()
 		for s := range channel {
-			result, err := st.translateService.TranslateText(ctx, s)
+			result, err := translateService.TranslateText(ctx, s)
+			fmt.Println(result)
 			if err != nil {
 				fmt.Println("Ошибка перевода", err)
 			}
