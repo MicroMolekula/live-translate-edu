@@ -1,8 +1,8 @@
 gen_proto:
-	mkdir ./cloudapi/output && \
-	protoc -I ./cloudapi -I ./cloudapi/third_party/googleapis \
-	   --go_out=./cloudapi/output \
-	   --go-grpc_out=./cloudapi/output \
+	mkdir ./grpc/output && \
+	protoc -I ./grpc -I ./grpc/third_party/googleapis \
+	   --go_out=./grpc/output \
+	   --go-grpc_out=./grpc/output \
 		 google/api/http.proto \
 		 google/api/annotations.proto \
 		 yandex/cloud/api/operation.proto \
