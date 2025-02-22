@@ -3,3 +3,4 @@ backend/configs/app.yaml
 backend/tmp
 backend/main
 data
+backend/grpc/output
