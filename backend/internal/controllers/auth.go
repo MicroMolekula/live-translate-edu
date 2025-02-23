@@ -5,8 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/live-translate-edu/internal/dto"
 	"github.com/live-translate-edu/internal/services"
+	"github.com/live-translate-edu/internal/utils"
 	"net/http"
-	"strings"
 )
 
 type AuthController struct {
@@ -56,9 +56,8 @@ func (ac *AuthController) Me(ctx *gin.Context) {
 
 func (ac *AuthController) AuthRequiredMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		authHeader := ctx.Request.Header.Get("Authorization")
-		tokenString, ok := strings.CutPrefix(authHeader, "Bearer ")
-		if !ok {
+		tokenString, err := utils.GetTokenFromHeader(ctx)
+		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"success": false,
 				"error":   "unauthorized",
@@ -76,6 +75,7 @@ func (ac *AuthController) AuthRequiredMiddleware() gin.HandlerFunc {
 			return
 		}
 		ctx.Set("user", user)
+		ctx.Set("jwt", tokenString)
 		ctx.Next()
 	}
 }

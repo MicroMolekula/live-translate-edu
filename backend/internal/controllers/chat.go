@@ -35,6 +35,7 @@ func NewChatController(cfg *configs.Config) *ChatController {
 }
 
 func (c *ChatController) Connect(ctx *gin.Context) {
+	c.upgrader.Subprotocols = []string{"auth", ctx.Value("jwt").(string)}
 	user := ctx.Value("user").(*dto.UserDTO)
 	room := ctx.Param("room")
 	wsConn, err := c.upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
