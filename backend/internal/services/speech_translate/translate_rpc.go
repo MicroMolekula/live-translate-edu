@@ -6,6 +6,7 @@ import (
 	"fmt"
 	yandexTranslate "github.com/live-translate-edu/grpc/output/github.com/yandex-cloud/go-genproto/yandex/cloud/ai/translate/v2"
 	"github.com/live-translate-edu/internal/configs"
+	"github.com/live-translate-edu/internal/dto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"sync"
@@ -35,11 +36,18 @@ func NewTranslateServ(cfg *configs.Config) (*TranslateServ, error) {
 	}, nil
 }
 
-func (t *TranslateServ) TranslateText(ctx context.Context, text string) (string, error) {
+func (t *TranslateServ) TranslateText(ctx context.Context, text string, languages *dto.TranslateLanguagesDto) (string, error) {
+	defaultLanguages := &dto.TranslateLanguagesDto{}
+	if languages == nil || languages == defaultLanguages {
+		languages = &dto.TranslateLanguagesDto{
+			Source: "ru",
+			Target: "en",
+		}
+	}
 	client := yandexTranslate.NewTranslationServiceClient(t.Conn)
 	response, err := client.Translate(ctx, &yandexTranslate.TranslateRequest{
-		SourceLanguageCode: "ru",
-		TargetLanguageCode: "en",
+		SourceLanguageCode: languages.Source,
+		TargetLanguageCode: languages.Target,
 		Texts:              []string{text},
 	})
 	if err != nil {

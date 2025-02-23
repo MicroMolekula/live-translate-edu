@@ -10,18 +10,21 @@ type Router struct {
 	room            *RoomController
 	speechTranslate *SpeechTranslatorController
 	user            *UserController
+	chat            *ChatController
 }
 
 func NewRouter(
 	auth *AuthController,
 	room *RoomController,
 	speechTranslate *SpeechTranslatorController,
-	user *UserController) *Router {
+	user *UserController,
+	chat *ChatController) *Router {
 	return &Router{
 		auth:            auth,
 		room:            room,
 		speechTranslate: speechTranslate,
 		user:            user,
+		chat:            chat,
 	}
 }
 
@@ -38,6 +41,8 @@ func (r *Router) InitRoutes(engine *gin.Engine) {
 			authRequiredGroup.GET("/me", r.auth.Me)
 			authRequiredGroup.POST("/user/create", r.user.Create)
 			authRequiredGroup.GET("/users", r.auth.Users)
+			authRequiredGroup.GET("/user/room_token", r.room.GetRoomTokenForUser)
+			authRequiredGroup.GET("/chat/connect/:room", r.chat.Connect)
 		}
 		apiGroup.POST("/auth", r.auth.Auth)
 		apiGroup.POST("/token", r.room.GetJoinToken)

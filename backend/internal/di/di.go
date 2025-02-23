@@ -73,5 +73,6 @@ func getControllers() []interface{} {
 		controllers.NewAuthController,
 		controllers.NewUserController,
 		controllers.NewRecognizerController,
+		controllers.NewChatController,
 	}
 }

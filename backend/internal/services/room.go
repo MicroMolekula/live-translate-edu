@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"github.com/live-translate-edu/internal/configs"
+	"github.com/live-translate-edu/internal/dto"
 	"github.com/livekit/protocol/auth"
 	"github.com/livekit/protocol/livekit"
 	lksdk "github.com/livekit/server-sdk-go/v2"
@@ -75,4 +76,12 @@ func (r *RoomService) getJoinToken(apiKey, apiSecret, room, identity string) (st
 		SetValidFor(time.Hour * 24)
 
 	return at.ToJWT()
+}
+
+func (r *RoomService) GetRoomTokenForUser(user *dto.UserDTO, room string) (string, error) {
+	token, err := r.GenerateJoinToken(room, user.Email)
+	if err != nil {
+		return "", err
+	}
+	return token, nil
 }

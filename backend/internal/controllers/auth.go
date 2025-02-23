@@ -40,16 +40,9 @@ func (ac *AuthController) Auth(ctx *gin.Context) {
 		return
 	}
 
-	roomToken, err := ac.roomService.GenerateJoinToken("myroom", request.Login)
-	if err != nil {
-		newErrorResponse(ctx, http.StatusInternalServerError, err, "Internal Server Error")
-		return
-	}
-
 	ctx.JSON(http.StatusOK, gin.H{
-		"token":      token,
-		"room_token": roomToken,
-		"success":    true,
+		"token":   token,
+		"success": true,
 	})
 }
 
