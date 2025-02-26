@@ -25,20 +25,16 @@ func NewRoomController(roomService *services.RoomService) *RoomController {
 func (rc *RoomController) GetJoinToken(ctx *gin.Context) {
 	var userIdentity UserIdentity
 	if err := ctx.Bind(&userIdentity); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"success":       true,
-			"error_message": err.Error(),
-		})
+		newErrorResponse(ctx, http.StatusBadRequest, err, "Bad request")
+		return
 	}
 	token, err := rc.roomService.GenerateJoinToken(
 		userIdentity.Room,
 		userIdentity.Name,
 	)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"success":       true,
-			"error_message": err.Error(),
-		})
+		newErrorResponse(ctx, http.StatusInternalServerError, err, "Internal server error")
+		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"success": true,

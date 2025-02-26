@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/live-translate-edu/internal/models"
 	"gorm.io/gorm"
 )
@@ -39,4 +40,29 @@ func (ur *UserRepository) FindOneByEmail(email string) (*models.User, error) {
 		return nil, err
 	}
 	return user, nil
+}
+
+func (ur *UserRepository) AddUserInGroup(group *models.Group, user *models.User) error {
+	return ur.db.Model(user).Update("group_id", group.ID).Error
+}
+
+func (ur *UserRepository) AddUsersInGroupByIds(groupId int, usersIds []int) error {
+	sql := ur.db.ToSQL(func(db *gorm.DB) *gorm.DB {
+		return db.Model(&models.User{}).
+			Where("id IN (?)", usersIds).
+			Update("group_id", groupId)
+	})
+	fmt.Println(sql)
+	return ur.db.Model(&models.User{}).
+		Where("id IN ?", usersIds).
+		Update("group_id", groupId).
+		Error
+}
+
+func (ur *UserRepository) AddUsersInGroup(group *models.Group, users []*models.User) error {
+	ids := make([]int, len(users))
+	for i, user := range users {
+		ids[i] = int(user.ID)
+	}
+	return ur.AddUsersInGroupByIds(int(group.ID), ids)
 }

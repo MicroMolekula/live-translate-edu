@@ -37,7 +37,7 @@ func (as *AuthService) Auth(authData dto.AuthDto) (string, error) {
 	if err = utils.CheckPassword(user.Password, authData.Password); err != nil {
 		return "", ErrorInvalidCredentials
 	}
-	token, err := as.jwtService.GenerateTokenByUser(user, 60)
+	token, err := as.jwtService.GenerateTokenByUser(user, 60*24)
 	if err != nil {
 		return "", err
 	}

@@ -58,12 +58,18 @@ func getServices() []interface{} {
 		services.NewRoomService,
 		services.NewUserService,
 		speech_translate.NewSpeechTranslator,
+		services.NewGroupService,
+		services.NewLanguageService,
+		services.NewLessonService,
 	}
 }
 
 func getRepositories() []interface{} {
 	return []interface{}{
 		repository.NewUserRepository,
+		repository.NewGroupRepository,
+		repository.NewLanguageRepository,
+		repository.NewLessonRepository,
 	}
 }
 
@@ -74,5 +80,8 @@ func getControllers() []interface{} {
 		controllers.NewUserController,
 		controllers.NewRecognizerController,
 		controllers.NewChatController,
+		controllers.NewGroupController,
+		controllers.NewLanguageController,
+		controllers.NewLessonController,
 	}
 }

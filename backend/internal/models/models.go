@@ -22,14 +22,15 @@ type User struct {
 	GroupID    sql.NullInt64
 	LanguageID sql.NullInt64
 	Messages   []Message
-	Lessons    []*Lesson `gorm:"many2many:user_lesson;"`
+	Lessons    []*Lesson `gorm:"foreignKey:TeacherID"`
 }
 
 type Group struct {
 	gorm.Model
-	Title string
-	Code  string `gorm:"unique"`
-	Users []User
+	Title   string
+	Code    string `gorm:"unique"`
+	Users   []*User
+	Lessons []*Lesson `gorm:"foreignKey:GroupID"`
 }
 
 type Language struct {
@@ -57,11 +58,13 @@ type MessageContent struct {
 
 type Lesson struct {
 	gorm.Model
-	Presentation   string
+	Presentation   sql.NullString
 	DateTimeStart  time.Time
 	NumberRoom     uint
+	CodeRoom       string
 	Messages       []Message
-	Users          []*User `gorm:"many2many:user_lesson;"`
+	TeacherID      uint
+	GroupID        uint
 	LessonContents []LessonContent
 }
 
