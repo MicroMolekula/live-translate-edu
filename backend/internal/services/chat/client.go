@@ -58,3 +58,7 @@ func (c *Client) Write() {
 func (c *Client) Close() {
 	close(c.send)
 }
+
+func (c *Client) getUser() *dto.UserDTO {
+	return c.user
+}

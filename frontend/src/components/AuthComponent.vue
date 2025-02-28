@@ -90,7 +90,13 @@ async function handleLogin() {
 
   let result = await response.json()
   localStorage.setItem("jwt", result.token)
-  localStorage.setItem("room_token", result.room_token)
+  let responseRoom = await fetch('http://localhost:8080/api/user/room_token?room=myroom', {
+    headers: {
+      Authorization: "Bearer " + result.token
+    },
+  })
+  let resultRoom = await responseRoom.json()
+  localStorage.setItem("room_token", resultRoom.token)
   await router.push('/lesson')
 }
 </script>

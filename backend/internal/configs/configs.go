@@ -45,6 +45,7 @@ type Database struct {
 
 type JWT struct {
 	Secret string `yaml:"secret"`
+	TTL    int    `yaml:"ttl"`
 }
 
 func NewConfig() (*Config, error) {

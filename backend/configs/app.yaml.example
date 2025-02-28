@@ -22,3 +22,7 @@ database:
   password: "pguser"
   dbname: "db"
   timezone: "Europe/Moscow"
+
+jwt:
+  secret:
+  ttl: 60 # в минутах

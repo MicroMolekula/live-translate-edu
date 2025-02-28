@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"github.com/live-translate-edu/internal/configs"
 	"github.com/live-translate-edu/internal/dto"
 	"github.com/live-translate-edu/internal/repository"
 	"github.com/live-translate-edu/internal/utils"
@@ -16,16 +17,19 @@ type AuthService struct {
 	jwtService  *JWTService
 	repository  repository.IRepository
 	userService *UserService
+	cfg         *configs.Config
 }
 
 func NewAuthService(
 	jwtService *JWTService,
 	userRepository *repository.UserRepository,
-	userService *UserService) *AuthService {
+	userService *UserService,
+	cfg *configs.Config) *AuthService {
 	return &AuthService{
 		jwtService:  jwtService,
 		repository:  userRepository,
 		userService: userService,
+		cfg:         cfg,
 	}
 }
 
@@ -37,7 +41,7 @@ func (as *AuthService) Auth(authData dto.AuthDto) (string, error) {
 	if err = utils.CheckPassword(user.Password, authData.Password); err != nil {
 		return "", ErrorInvalidCredentials
 	}
-	token, err := as.jwtService.GenerateTokenByUser(user, 60*24)
+	token, err := as.jwtService.GenerateTokenByUser(user, as.cfg.JWT.TTL)
 	if err != nil {
 		return "", err
 	}

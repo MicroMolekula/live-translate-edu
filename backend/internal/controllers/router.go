@@ -62,6 +62,7 @@ func (r *Router) InitRoutes(engine *gin.Engine) {
 			authRequiredGroup.GET("/me", r.auth.Me)
 			authRequiredGroup.GET("/user/room_token", r.room.GetRoomTokenForUser)
 			authRequiredGroup.GET("/chat/connect/:room", r.chat.Connect)
+			authRequiredGroup.GET("/chat/:room/users", r.chat.GetAllUsers)
 			authRequiredGroup.POST("/lesson/create", r.lesson.CreateLesson)
 		}
 		apiGroup.POST("/auth", r.auth.Auth)

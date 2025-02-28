@@ -49,3 +49,13 @@ func (c *ChatController) Connect(ctx *gin.Context) {
 	go client.Write()
 	go client.Read()
 }
+
+func (c *ChatController) GetAllUsers(ctx *gin.Context) {
+	room := ctx.Param("room")
+	users, err := c.hub.GetUsers(room)
+	if err != nil {
+		newErrorResponse(ctx, http.StatusNotFound, err, "Нет такой комнаты в данный момент")
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"users": users})
+}

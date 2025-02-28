@@ -1,6 +1,7 @@
 package chat
 
 import (
+	"errors"
 	"fmt"
 	"github.com/live-translate-edu/internal/configs"
 	"github.com/live-translate-edu/internal/dto"
@@ -68,4 +69,16 @@ func (h *Hub) Broadcast(message *dto.MessageDto) {
 			h.unregister <- client
 		}
 	}
+}
+
+func (h *Hub) GetUsers(roomToken string) ([]*dto.UserDTO, error) {
+	room, ok := h.clients[roomToken]
+	if !ok {
+		return nil, errors.New("room not found")
+	}
+	users := make([]*dto.UserDTO, 0)
+	for client := range room {
+		users = append(users, client.getUser())
+	}
+	return users, nil
 }

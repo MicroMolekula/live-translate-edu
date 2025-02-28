@@ -43,11 +43,6 @@ const decoder = new TextDecoder()
 
 
 async function connectionRTC() {
-  await fetch("http://localhost:8080/api/connect", {
-    headers: {
-      'Authorization': 'Bearer ' + localStorage.getItem('jwt')
-    }
-  })
   room
     .on(RoomEvent.TrackSubscribed, handleTrackSubscribed)
   navigator.mediaDevices.getUserMedia({
@@ -60,6 +55,11 @@ async function connectionRTC() {
   }).catch((error) => {
     console.error("Ошибка при доступе к микрофону:", error);
   });
+  await fetch("http://localhost:8080/api/connect", {
+    headers: {
+      'Authorization': 'Bearer ' + localStorage.getItem('jwt')
+    }
+  })
 }
 
 async function disconnectRecognize() {
@@ -93,13 +93,7 @@ function logout() {
 }
 
 let chatMessages = ref([
-  {
-    user: "Ivan Krasikov",
-    text: {
-      ru: "Привет",
-      en: "Hello"
-    }
-  }
+
 ])
 
 const wsClient = new WebSocket('ws://localhost:8080/api/chat/connect/myroom', ['auth', localStorage.getItem('jwt')])
@@ -154,12 +148,14 @@ function sendMessage() {
           <p v-else class="text-center text-gray-400">Место для субтитров</p>
         </div>
         <!-- Button under subtitles -->
-        <button @click="connectionRTC" class="mt-4 px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
-          Запустить перевод речи
-        </button>
-        <button @click="disconnectRecognize" class="mt-4 px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
-          Отключить перевод речи
-        </button>
+        <div style="display:flex; gap: 10px" v-if="user.role === 'teacher'">
+          <button @click="connectionRTC" class="mt-4 px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            Запустить перевод речи
+          </button>
+          <button @click="disconnectRecognize" class="mt-4 px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            Отключить перевод речи
+          </button>
+        </div>
 
       </div>
       <!-- Chat Section -->
