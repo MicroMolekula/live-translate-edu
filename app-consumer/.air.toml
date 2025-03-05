@@ -1,0 +1,14 @@
+tmp_dir = "/logs"
+
+[build]
+cmd = "go build -o /main ./cmd/main.go"
+bin = "main"
+full_bin = "CONFIG_PATH=./configs/app.yaml /main >>/logs/info.log 2>>/logs/error.log 3>>/logs/error.log"
+dir = "."
+tmp_dir = "/logs"
+include_ext = ["go"]
+exclude_dir = ["vendor"]
+run_after_build = "chmod +x /main; go tool pprof main http://0.0.0.0:8888/debug/pprof/profile;"
+
+[log]
+level = "debug"

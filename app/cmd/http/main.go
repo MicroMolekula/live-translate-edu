@@ -10,7 +10,6 @@ import (
 
 func main() {
 	di.InitContainer()
-
 	go func() {
 		http.ListenAndServe(":8888", nil)
 	}()

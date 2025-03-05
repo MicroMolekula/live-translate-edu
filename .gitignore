@@ -1,6 +1,6 @@
 .idea
-backend/configs/app.yaml
-backend/tmp
-backend/main
+app/configs/app.yaml
+app-consumer/configs/app.yaml
 data
-backend/grpc/output
+app/grpc/output
+logs
