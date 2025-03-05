@@ -2,9 +2,11 @@ package chat
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/live-translate-edu/internal/configs"
 	"github.com/live-translate-edu/internal/dto"
+	"github.com/live-translate-edu/internal/rabbitmq"
 	"github.com/live-translate-edu/internal/services/speech_translate"
 	"log"
 )
@@ -33,6 +35,33 @@ func (mh *MessageHandlers) HandleMessage(message *dto.MessageDto) {
 
 type Handler interface {
 	messageHandle(*dto.MessageDto)
+}
+
+type RabbitMQHandler struct {
+	cfg *configs.Config
+}
+
+func NewRabbitMQHandler(cfg *configs.Config) *RabbitMQHandler {
+	return &RabbitMQHandler{cfg: cfg}
+}
+
+// #TODO Переписать Говно
+func (rmqh *RabbitMQHandler) messageHandle(message *dto.MessageDto) {
+	client, err := rabbitmq.NewRabbitMQ(rmqh.cfg)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer client.Close()
+	dataMessage, err := json.Marshal(message)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	if err = client.Publish("chat_messages", dataMessage); err != nil {
+		log.Println(err)
+		return
+	}
 }
 
 type TranslateHandler struct {

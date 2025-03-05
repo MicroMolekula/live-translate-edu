@@ -1,7 +1,18 @@
 package main
 
-import "fmt"
+import (
+	"app-consumer/internal/configs"
+	"app-consumer/internal/handler"
+	"fmt"
+	"log"
+)
 
 func main() {
-	fmt.Println("Сервис подписчик работает")
+	cfg, err := configs.NewConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("\n\nStart RabbitMQ Handler")
+	handlerRabbit := handler.NewRabbitMQHandler(cfg)
+	handlerRabbit.Run()
 }

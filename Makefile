@@ -11,10 +11,13 @@ go-bash:
 	docker-compose exec -it web /bin/sh
 
 log-app:
-	tail -f app/tmp/info.log
+	tail -f logs/app/info.log
+
+log-consumer:
+	tail -f logs/app-consumer/info.log
 
 error-log-app:
-	tail -f app/tmp/error.log
+	tail -f logs/app/error.log
 
 ps:
 	docker-compose ps
