@@ -26,10 +26,10 @@ ps:
 	docker-compose ps
 
 gen-proto:
-	mkdir ./backend/grpc/output && \
-    	protoc -I ./backend/grpc -I ./backend/grpc/third_party/googleapis \
-    	   --go_out=./backend/grpc/output \
-    	   --go-grpc_out=./backend/grpc/output \
+	mkdir ./app/grpc/output && \
+    	protoc -I ./app/grpc -I ./app/grpc/third_party/googleapis \
+    	   --go_out=./app/grpc/output \
+    	   --go-grpc_out=./app/grpc/output \
     		 google/api/http.proto \
     		 google/api/annotations.proto \
     		 yandex/cloud/api/operation.proto \

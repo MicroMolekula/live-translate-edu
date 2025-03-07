@@ -3,7 +3,7 @@ tmp_dir = "/logs"
 [build]
 cmd = "go build -o /main ./cmd/http/main.go"
 bin = "main"
-full_bin = "CONFIG_PATH=./configs/app.yaml /main >>/logs/info.log 2>>/logs/error.log"
+full_bin = "CONFIG_PATH=./configs/app.yaml /main >>/logs/info.log 2>>/logs/info.log 3>>/logs/info.log"
 dir = "."
 include_ext = ["go"]
 exclude_dir = ["vendor"]

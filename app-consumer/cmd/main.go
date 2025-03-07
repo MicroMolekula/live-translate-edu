@@ -12,7 +12,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("\n\nStart RabbitMQ Handler")
+	fmt.Println("\n\nStart RabbitMQ Handler ///")
 	handlerRabbit := handler.NewRabbitMQHandler(cfg)
 	handlerRabbit.Run()
 }

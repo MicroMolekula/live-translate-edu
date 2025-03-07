@@ -23,6 +23,12 @@ database:
   dbname: "db"
   timezone: "Europe/Moscow"
 
+rabbitmq:
+  host: "rabbitmq"
+  port: 5672
+  username: "rmuser"
+  password: "rmpassword"
+
 jwt:
   secret:
   ttl: 60 # в минутах
