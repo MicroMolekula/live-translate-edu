@@ -72,7 +72,6 @@ func (rec *Recognizer) connectToGrpc() (*grpc.ClientConn, error) {
 	)
 }
 
-// TODO есть проблема с инициализацией клиента, стрим при первой компиляции возвращает nil
 func (rec *Recognizer) initRecognizerClient(grpcConn *grpc.ClientConn) (grpc.BidiStreamingClient[stt.StreamingRequest, stt.StreamingResponse], error) {
 	client := stt.NewRecognizerClient(grpcConn)
 	ctx := context.Background()
