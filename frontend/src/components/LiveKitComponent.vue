@@ -9,6 +9,7 @@ import {useRouter} from "vue-router";
 
 const result = ref('')
 const token1 = localStorage.getItem("room_token")
+const roomName = ref(localStorage.getItem("room"))
 
 const room = new Room()
 const router = useRouter()
@@ -43,6 +44,11 @@ const decoder = new TextDecoder()
 
 
 async function connectionRTC() {
+  await fetch("http://localhost:8080/api/connect?room=" + roomName.value, {
+    headers: {
+      'Authorization': 'Bearer ' + localStorage.getItem('jwt')
+    }
+  })
   room
     .on(RoomEvent.TrackSubscribed, handleTrackSubscribed)
   navigator.mediaDevices.getUserMedia({
@@ -55,16 +61,12 @@ async function connectionRTC() {
   }).catch((error) => {
     console.error("Ошибка при доступе к микрофону:", error);
   });
-  await fetch("http://localhost:8080/api/connect", {
-    headers: {
-      'Authorization': 'Bearer ' + localStorage.getItem('jwt')
-    }
-  })
 }
+
 
 async function disconnectRecognize() {
   await room.disconnect()
-  await fetch("http://localhost:8080/api/disconnect", {
+  await fetch("http://localhost:8080/api/disconnect?room=" + roomName.value, {
     headers: {
       'Authorization': 'Bearer ' + localStorage.getItem('jwt')
     }
@@ -93,10 +95,16 @@ function logout() {
 }
 
 let chatMessages = ref([
-
+  {
+    user: "Ivan Krasikov",
+    text: {
+      ru: "Привет",
+      en: "Hello"
+    }
+  }
 ])
 
-const wsClient = new WebSocket('ws://localhost:8080/api/chat/connect/myroom', ['auth', localStorage.getItem('jwt')])
+const wsClient = new WebSocket('ws://localhost:8080/api/chat/connect/' + roomName.value, ['auth', localStorage.getItem('jwt')])
 
 wsClient.onopen = function () {
   console.log("Успешное подключение")
@@ -130,7 +138,7 @@ function sendMessage() {
   <div class="flex flex-col h-screen">
     <!-- Header -->
     <header class="bg-green-600 text-white p-4 flex justify-between items-center">
-      <div class="text-2xl font-semibold">Перевод в реальном времени</div>
+      <div class="text-2xl font-semibold">Комната {{ roomName }}</div>
       <div class="flex flex-row gap-3">
         <div class="text-lg pt-5">{{user.name + " " + user.surname}}</div>
         <button @click="logout" class="mt-4 px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -148,14 +156,12 @@ function sendMessage() {
           <p v-else class="text-center text-gray-400">Место для субтитров</p>
         </div>
         <!-- Button under subtitles -->
-        <div style="display:flex; gap: 10px" v-if="user.role === 'teacher'">
-          <button @click="connectionRTC" class="mt-4 px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            Запустить перевод речи
-          </button>
-          <button @click="disconnectRecognize" class="mt-4 px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            Отключить перевод речи
-          </button>
-        </div>
+        <button @click="connectionRTC" class="mt-4 px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          Запустить перевод речи
+        </button>
+        <button @click="disconnectRecognize" class="mt-4 px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          Отключить перевод речи
+        </button>
 
       </div>
       <!-- Chat Section -->

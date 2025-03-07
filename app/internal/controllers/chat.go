@@ -19,6 +19,7 @@ type ChatController struct {
 func NewChatController(cfg *configs.Config) *ChatController {
 	handlers := chat.NewMessageHandlers(cfg)
 	handlers.Add(chat.NewTranslateHandler(cfg))
+	handlers.Add(chat.NewRabbitMQHandler(cfg))
 	hub := chat.NewHub(handlers)
 	go hub.Run()
 	upgrader := websocket.Upgrader{

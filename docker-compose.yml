@@ -1,6 +1,8 @@
 version: "3.8"
 volumes:
   postgres: ~
+  livekit: ~
+  rabbitmq: ~
 services:
   postgres:
     ports:
@@ -11,15 +13,19 @@ services:
     environment:
       POSTGRES_USER: pguser
       POSTGRES_PASSWORD: pguser
-  web:
-    build:
-      context: backend
-      dockerfile: docker/Dockerfile
-    ports:
-      - "8080:8080"
-      - "8888:8888"
+  rabbitmq:
+    image: rabbitmq:3.10.7-management
+    hostname: rabbitmq
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=rmuser
+      - RABBITMQ_DEFAULT_PASS=rmpassword
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
     volumes:
-      - ./backend:/app
+      - rabbitmq:/var/lib/rabbitmq
+    ports:
+      - "15672:15672"
+      - "5672:5672"
   livekit:
     image: livekit/livekit-server:latest
     container_name: livekit-server
@@ -27,4 +33,21 @@ services:
     ports:
       - "0.0.0.0:7880:7880"
     volumes:
-      - ./data:/data
+      - livekit:/data
+  app:
+    build:
+      context: app
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8080:8080"
+      - "8888:8888"
+    volumes:
+      - ./app:/app
+      - ./logs/app:/logs
+  app-consumer:
+    build:
+      context: app-consumer
+      dockerfile: docker/Dockerfile
+    volumes:
+      - ./app-consumer:/app
+      - ./logs/app-consumer:/logs

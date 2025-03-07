@@ -10,11 +10,17 @@ down:
 go-bash:
 	docker-compose exec -it web /bin/sh
 
-log:
-	tail -f backend/tmp/info.log
+log-app:
+	tail -f logs/app/info.log
 
-error-log:
-	tail -f backend/tmp/error.log
+log-consumer:
+	tail -f logs/app-consumer/info.log
+
+error-log-app:
+	tail -f logs/app/error.log
+
+error-log-consumer:
+	tail -f logs/app-consumer/error.log
 
 ps:
 	docker-compose ps

@@ -13,22 +13,35 @@ import (
 	"time"
 )
 
+type cancelContext struct {
+	Ctx        context.Context
+	CancelFunc context.CancelFunc
+}
+
 type SpeechTranslator struct {
-	cfg        *configs.Config
-	ctx        context.Context
-	cancelFunc context.CancelFunc
+	cfg          *configs.Config
+	roomsContext map[string]cancelContext
 }
 
 func NewSpeechTranslator(cfg *configs.Config) *SpeechTranslator {
-	ctx, cancel := context.WithCancel(context.Background())
+	roomContext := map[string]cancelContext{}
 	return &SpeechTranslator{
-		cfg:        cfg,
-		ctx:        ctx,
-		cancelFunc: cancel,
+		cfg:          cfg,
+		roomsContext: roomContext,
 	}
 }
 
 func (st *SpeechTranslator) SpeechTranslate(roomName string) {
+	roomContext, ok := st.roomsContext[roomName]
+	if !ok {
+		ctxRoom, cancelRoom := context.WithCancel(context.Background())
+		st.roomsContext[roomName] = cancelContext{
+			Ctx:        ctxRoom,
+			CancelFunc: cancelRoom,
+		}
+		roomContext = st.roomsContext[roomName]
+	}
+
 	resultTranslate := make(chan string)
 	var contextCancel, cancel = context.WithCancel(context.Background())
 	recognizer := NewRecognizer(st.cfg)
@@ -65,15 +78,19 @@ func (st *SpeechTranslator) SpeechTranslate(roomName string) {
 	go outputResult(contextCancel, room, resultTranslate)
 
 	select {
-	case <-st.ctx.Done():
+	case <-roomContext.Ctx.Done():
 		cancel()
 	}
 }
 
-func (st *SpeechTranslator) Stop() {
-	st.cancelFunc()
+func (st *SpeechTranslator) Stop(roomName string) {
+	st.roomsContext[roomName].CancelFunc()
 	time.Sleep(100 * time.Millisecond)
-	st.ctx, st.cancelFunc = context.WithCancel(context.Background())
+	roomCtx, roomCancel := context.WithCancel(context.Background())
+	st.roomsContext[roomName] = cancelContext{
+		Ctx:        roomCtx,
+		CancelFunc: roomCancel,
+	}
 }
 
 func steamTrackToOggOpus(ctx context.Context, track *webrtc.TrackRemote) (channelOut chan []byte) {

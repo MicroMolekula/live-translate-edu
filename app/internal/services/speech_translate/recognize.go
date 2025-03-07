@@ -11,6 +11,7 @@ import (
 	"io"
 	"log"
 	"sync"
+	"time"
 )
 
 type Recognizer struct {
@@ -71,7 +72,6 @@ func (rec *Recognizer) connectToGrpc() (*grpc.ClientConn, error) {
 	)
 }
 
-// TODO есть проблема с инициализацией клиента, стрим при первой компиляции возвращает nil
 func (rec *Recognizer) initRecognizerClient(grpcConn *grpc.ClientConn) (grpc.BidiStreamingClient[stt.StreamingRequest, stt.StreamingResponse], error) {
 	client := stt.NewRecognizerClient(grpcConn)
 	ctx := context.Background()
@@ -109,8 +109,10 @@ func (rec *Recognizer) SpeechKitRecognize(ctxCancel context.Context, channelIn <
 			}
 		}()
 		stream, err := rec.initRecognizerClient(grpcConn)
-		if err != nil {
+		for err != nil {
 			fmt.Println("Ошибка инициализации клиента: ", err)
+			time.Sleep(2 * time.Second)
+			stream, err = rec.initRecognizerClient(grpcConn)
 		}
 		fmt.Println("Начало распознавания")
 		go func() {

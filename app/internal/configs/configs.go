@@ -13,6 +13,7 @@ type Config struct {
 	LiveKit  `yaml:"livekit"`
 	Database `yaml:"database"`
 	JWT      `yaml:"jwt"`
+	RabbitMQ `yaml:"rabbitmq"`
 }
 
 type Yandex struct {
@@ -46,6 +47,13 @@ type Database struct {
 type JWT struct {
 	Secret string `yaml:"secret"`
 	TTL    int    `yaml:"ttl"`
+}
+
+type RabbitMQ struct {
+	Host     string `yaml:"host"`
+	Port     int    `yaml:"port"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
 }
 
 func NewConfig() (*Config, error) {
