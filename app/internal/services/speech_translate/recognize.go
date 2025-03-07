@@ -11,6 +11,7 @@ import (
 	"io"
 	"log"
 	"sync"
+	"time"
 )
 
 type Recognizer struct {
@@ -109,8 +110,10 @@ func (rec *Recognizer) SpeechKitRecognize(ctxCancel context.Context, channelIn <
 			}
 		}()
 		stream, err := rec.initRecognizerClient(grpcConn)
-		if err != nil {
+		for err != nil {
 			fmt.Println("Ошибка инициализации клиента: ", err)
+			time.Sleep(2 * time.Second)
+			stream, err = rec.initRecognizerClient(grpcConn)
 		}
 		fmt.Println("Начало распознавания")
 		go func() {

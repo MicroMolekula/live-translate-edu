@@ -4,6 +4,7 @@ import (
 	"app-consumer/internal/configs"
 	"fmt"
 	amqp "github.com/rabbitmq/amqp091-go"
+	"time"
 )
 
 var declaredQueues = make(map[string]*amqp.Queue)
@@ -16,8 +17,9 @@ type RabbitMQ struct {
 
 func NewRabbitMQ(cfg *configs.Config) (*RabbitMQ, error) {
 	connect, err := amqp.Dial(getUrlConnect(cfg))
-	if err != nil {
-		return nil, err
+	for err != nil {
+		time.Sleep(5 * time.Second)
+		connect, err = amqp.Dial(getUrlConnect(cfg))
 	}
 	channel, err := connect.Channel()
 	if err != nil {

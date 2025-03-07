@@ -31,6 +31,18 @@
           />
         </div>
 
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">Название комнаты</label>
+          <input
+              type="text"
+              id="room"
+              v-model="room"
+              required
+              class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              placeholder="Введите название комнаты"
+          />
+        </div>
+
         <!-- Login button -->
         <div>
           <button
@@ -70,6 +82,7 @@ import {useRouter} from "vue-router";
 const email = ref("")
 const password = ref("")
 const showErrorModal = ref(false)
+const room = ref("")
 
 const router = useRouter()
 
@@ -90,7 +103,14 @@ async function handleLogin() {
 
   let result = await response.json()
   localStorage.setItem("jwt", result.token)
-  localStorage.setItem("room_token", result.room_token)
+  let roomResponse = await fetch("http://localhost:8080/api/user/room_token?room=" + room.value, {
+    headers: {
+      Authorization: "Bearer " + result.token
+    }
+  })
+  result = await roomResponse.json()
+  localStorage.setItem("room_token", result.token)
+  localStorage.setItem("room", room.value)
   await router.push('/lesson')
 }
 </script>

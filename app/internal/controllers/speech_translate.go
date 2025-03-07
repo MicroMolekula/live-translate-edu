@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/live-translate-edu/internal/services/speech_translate"
 	"net/http"
-	"time"
 )
 
 type SpeechTranslatorController struct {
@@ -18,31 +17,30 @@ func NewRecognizerController(speechTranslator *speech_translate.SpeechTranslator
 }
 
 func (rc *SpeechTranslatorController) Connect(ctx *gin.Context) {
-	flagError := false
-	go func() {
-		defer func() {
-			if err := recover(); err != nil {
-				rc.speechTranslator.Stop()
-				flagError = true
-				ctx.JSON(http.StatusInternalServerError, gin.H{
-					"success": false,
-					"error":   err.(error).Error(),
-					"message": "Ошибка распознования",
-				})
-			}
-		}()
-		rc.speechTranslator.SpeechTranslate("myroom")
-	}()
-	time.Sleep(2 * time.Second)
-	if !flagError {
-		ctx.JSON(200, gin.H{
-			"success": true,
-		})
+	type Request struct {
+		RoomTitle string `form:"room"`
 	}
+	var room Request
+	if err := ctx.BindQuery(&room); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	go rc.speechTranslator.SpeechTranslate(room.RoomTitle)
+	ctx.JSON(200, gin.H{
+		"success": true,
+	})
 }
 
 func (rc *SpeechTranslatorController) Disconnect(ctx *gin.Context) {
-	go rc.speechTranslator.Stop()
+	type Request struct {
+		RoomTitle string `form:"room"`
+	}
+	var room Request
+	if err := ctx.BindQuery(&room); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	go rc.speechTranslator.Stop(room.RoomTitle)
 	ctx.JSON(200, gin.H{
 		"success": true,
 	})

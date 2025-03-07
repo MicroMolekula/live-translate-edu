@@ -19,6 +19,9 @@ log-consumer:
 error-log-app:
 	tail -f logs/app/error.log
 
+error-log-consumer:
+	tail -f logs/app-consumer/error.log
+
 ps:
 	docker-compose ps
 

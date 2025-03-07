@@ -45,7 +45,7 @@ func NewRabbitMQHandler(cfg *configs.Config) *RabbitMQHandler {
 	return &RabbitMQHandler{cfg: cfg}
 }
 
-// #TODO Переписать Говно
+// TODO Переписать Говно
 func (rmqh *RabbitMQHandler) messageHandle(message *dto.MessageDto) {
 	client, err := rabbitmq.NewRabbitMQ(rmqh.cfg)
 	if err != nil {
