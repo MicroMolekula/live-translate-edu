@@ -2,6 +2,7 @@
 import ButtomPanel from "@/components/ButtomPanel.vue";
 import SideBarChat from "@/components/SideBarChat.vue";
 import {ref} from "vue";
+import Subtitle from "@/components/Subtitle.vue";
 
 const isOpen = ref(false)
 
@@ -13,8 +14,8 @@ function openChat(msg) {
 <template>
   <div class="h-screen bg-main">
     <div class="flex flex-row gap-2 bg-main text-white" style="height: calc(100vh - 140px)">
-      <div class="flex-1 grid grid-cols-3 gap-4 p-4">
-
+      <div class="flex-1 grid gap-4 p-4 place-items-center">
+        <Subtitle></Subtitle>
       </div>
       <SideBarChat :open="isOpen"/>
     </div>
