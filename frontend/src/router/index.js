@@ -4,6 +4,8 @@ import AuthComponent from "@/components/AuthComponent.vue";
 import MeComponent from "@/components/MeComponent.vue";
 import Lessons from "@/components/Lessons.vue";
 import CreateLesson from "@/components/CreateLesson.vue";
+import Test from "@/components/Test.vue";
+import Test2 from "@/components/Test2.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -32,6 +34,16 @@ const router = createRouter({
             path: '/me',
             component: MeComponent,
             name: 'me'
+        },
+        {
+            path: '/test',
+            component: Test,
+            name: 'test'
+        },
+        {
+            path: '/test1',
+            component: Test2,
+            name: 'test1'
         }
     ]
 })

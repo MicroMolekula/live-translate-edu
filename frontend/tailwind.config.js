@@ -1,11 +1,15 @@
 module.exports = {
-  purge: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
-  darkMode: false, // or 'media' or 'class'
+    darkMode: ['class'],
+    content: ['./index.html', './src/**/*.{ts,js,vue}'],
   theme: {
-    extend: {},
+  	extend: {
+  		borderRadius: {
+  			lg: 'var(--radius)',
+  			md: 'calc(var(--radius) - 2px)',
+  			sm: 'calc(var(--radius) - 4px)'
+  		},
+  		colors: {}
+  	}
   },
-  variants: {
-    extend: {},
-  },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 }
