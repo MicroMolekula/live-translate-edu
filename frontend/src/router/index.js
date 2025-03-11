@@ -7,6 +7,7 @@ import CreateLesson from "@/components/CreateLesson.vue";
 import Test from "@/components/Test.vue";
 import Test2 from "@/components/Test2.vue";
 
+
 const router = createRouter({
     history: createWebHistory(),
     routes: [
