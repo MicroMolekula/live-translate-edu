@@ -2,6 +2,25 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {ref} from "vue";
+import login from '@/lib/request/login.js'
+
+const userData = ref({
+  login: '',
+  password: ''
+})
+
+function handleLogin() {
+  let result = {}
+  login(userData.value.login, userData.value.password)
+      .then(function (response) {
+        console.log(response)
+      })
+      .catch(function (e) {
+        console.log("Ошибка" + e)
+      })
+}
+
 </script>
 
 <template>
@@ -29,20 +48,15 @@ import { Label } from '@/components/ui/label'
                 id="email"
                 type="email"
                 placeholder="m@example.com"
+                v-model="userData.login"
                 required
             />
           </div>
           <div class="grid gap-2">
             <div class="flex items-center">
               <Label for="password">Пароль</Label>
-<!--              <a-->
-<!--                  href="/forgot-password"-->
-<!--                  class="ml-auto inline-block text-sm underline"-->
-<!--              >-->
-<!--                Forgot your password?-->
-<!--              </a>-->
             </div>
-            <Input id="password" type="password" required />
+            <Input id="password" type="password" v-model="userData.password" required />
           </div>
           <div class="grid gap-2">
             <Label for="room">Комната</Label>
@@ -52,16 +66,10 @@ import { Label } from '@/components/ui/label'
                 required
             />
           </div>
-          <Button type="submit" class="w-full">
+          <Button type="submit" @click="handleLogin" class="w-full">
             Войти
           </Button>
         </div>
-<!--        <div class="mt-4 text-center text-sm">-->
-<!--          Don't have an account?-->
-<!--          <a href="#" class="underline">-->
-<!--            Sign up-->
-<!--          </a>-->
-<!--        </div>-->
       </div>
     </div>
   </div>
