@@ -5,7 +5,6 @@ import MeComponent from "@/components/MeComponent.vue";
 import Lessons from "@/components/Lessons.vue";
 import CreateLesson from "@/components/CreateLesson.vue";
 import Test from "@/components/Test.vue";
-import Test2 from "@/components/Test2.vue";
 
 
 const router = createRouter({
@@ -40,11 +39,6 @@ const router = createRouter({
             path: '/test',
             component: Test,
             name: 'test'
-        },
-        {
-            path: '/test1',
-            component: Test2,
-            name: 'test1'
         }
     ]
 })
