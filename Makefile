@@ -1,14 +1,14 @@
 up:
-	docker-compose up -d
+	docker compose up -d
 
 build:
-	docker-compose up -d --build
+	docker compose up -d --build
 
 down:
-	docker-compose down
+	docker compose down
 
 go-bash:
-	docker-compose exec -it web /bin/sh
+	docker compose exec -it web /bin/sh
 
 log-app:
 	tail -f logs/app/info.log
@@ -23,7 +23,7 @@ error-log-consumer:
 	tail -f logs/app-consumer/error.log
 
 ps:
-	docker-compose ps
+	docker compose ps
 
 gen-proto:
 	mkdir ./app/grpc/output && \

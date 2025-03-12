@@ -5,6 +5,7 @@ import MeComponent from "@/components/MeComponent.vue";
 import Lessons from "@/components/Lessons.vue";
 import CreateLesson from "@/components/CreateLesson.vue";
 import Test from "@/components/Test.vue";
+import TestAuth from "@/components/TestAuth.vue"
 
 
 const router = createRouter({
@@ -39,6 +40,11 @@ const router = createRouter({
             path: '/test',
             component: Test,
             name: 'test'
+        },
+        {
+            path: '/test/auth',
+            component: TestAuth,
+            name: 'test-auth'
         }
     ]
 })
