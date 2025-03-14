@@ -8,8 +8,6 @@ import {userStore} from "@/stores/userStore.js";
 const isOpen = ref(false)
 const userData = userStore()
 
-console.log("Токен " + userData.token)
-console.log(userData.user)
 function openChat(msg) {
   isOpen.value = !isOpen.value
 }

@@ -10,17 +10,17 @@ const router = createRouter({
 
 export default router
 
-router.beforeEach(async function(to, from) {
-    const userStoreData = userStore()
-    if (to.name !== 'Login' && userStoreData.token === '') {
-        return {name: 'Login'}
-    }
-    try {
-        userStoreData.user = await currentUser(userStoreData.token)
-    } catch {
-        if (to.name !== 'Login') {
-            return { name: 'Login' }
-        }
-    }
-
-})
+// router.beforeEach(async function(to, from) {
+//     const userStoreData = userStore()
+//     if (to.name !== 'Login' && userStoreData.token === '') {
+//         return {name: 'Login'}
+//     }
+//     try {
+//         userStoreData.user = await currentUser(userStoreData.token)
+//     } catch {
+//         if (to.name !== 'Login') {
+//             return { name: 'Login' }
+//         }
+//     }
+//
+// })

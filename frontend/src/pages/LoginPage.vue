@@ -14,7 +14,6 @@ const userData = ref({
 
 const roomName = ref('')
 
-
 const router = useRouter()
 const userStoreData = userStore()
 
@@ -22,11 +21,10 @@ function handleLogin() {
   login(userData.value.login, userData.value.password)
       .then(function (response) {
         userStoreData.token += response
-        console.log(userStoreData.token)
         router.push('lesson/' + roomName.value)
       })
       .catch(function (e) {
-        console.log("Ошибка" + e)
+        console.log("Ошибка " + e)
       })
 }
 
