@@ -14,8 +14,8 @@ const Fa = Object.values({ ...FaIcons });
 addIcons(...Fa);
 
 const app = createApp(App)
-    .use(router)
     .use(pinia)
+    .use(router)
 
 app.component("v-icon", OhVueIcon)
 app.mount('#app')

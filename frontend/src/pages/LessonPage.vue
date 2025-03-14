@@ -3,9 +3,13 @@ import ButtomPanel from "@/components/ButtomPanel.vue";
 import SideBarChat from "@/components/SideBarChat.vue";
 import {ref} from "vue";
 import Subtitle from "@/components/Subtitle.vue";
+import {userStore} from "@/stores/userStore.js";
 
 const isOpen = ref(false)
+const userData = userStore()
 
+console.log("Токен " + userData.token)
+console.log(userData.user)
 function openChat(msg) {
   isOpen.value = !isOpen.value
 }

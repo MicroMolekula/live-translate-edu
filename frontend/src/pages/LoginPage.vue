@@ -4,17 +4,26 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {ref} from "vue";
 import login from '@/lib/request/login.js'
+import {userStore} from '@/stores/userStore.js'
+import {useRouter} from "vue-router";
 
 const userData = ref({
   login: '',
   password: ''
 })
 
+const roomName = ref('')
+
+
+const router = useRouter()
+const userStoreData = userStore()
+
 function handleLogin() {
-  let result = {}
   login(userData.value.login, userData.value.password)
       .then(function (response) {
-        console.log(response)
+        userStoreData.token += response
+        console.log(userStoreData.token)
+        router.push('lesson/' + roomName.value)
       })
       .catch(function (e) {
         console.log("Ошибка" + e)
@@ -63,6 +72,7 @@ function handleLogin() {
             <Input
                 id="room"
                 type="text"
+                v-model="roomName"
                 required
             />
           </div>
