@@ -1,4 +1,7 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @config "../../tailwind.config.js";
 
 /*
@@ -10,13 +13,6 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
-  }
   :root {
     --radius: 0.5rem;
     --sidebar-background: 0 0% 98%;

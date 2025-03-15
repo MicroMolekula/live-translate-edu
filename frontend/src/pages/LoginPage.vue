@@ -21,7 +21,7 @@ function handleLogin() {
   login(userData.value.login, userData.value.password)
       .then(function (response) {
         userStoreData.token += response
-        router.push('lesson/' + roomName.value)
+        router.push('/')
       })
       .catch(function (e) {
         console.log("Ошибка " + e)
@@ -65,15 +65,15 @@ function handleLogin() {
             </div>
             <Input id="password" type="password" v-model="userData.password" required />
           </div>
-          <div class="grid gap-2">
-            <Label for="room">Комната</Label>
-            <Input
-                id="room"
-                type="text"
-                v-model="roomName"
-                required
-            />
-          </div>
+<!--          <div class="grid gap-2">-->
+<!--            <Label for="room">Комната</Label>-->
+<!--            <Input-->
+<!--                id="room"-->
+<!--                type="text"-->
+<!--                v-model="roomName"-->
+<!--                required-->
+<!--            />-->
+<!--          </div>-->
           <Button type="submit" @click="handleLogin" class="w-full">
             Войти
           </Button>

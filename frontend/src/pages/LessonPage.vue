@@ -1,8 +1,8 @@
 <script setup>
-import ButtomPanel from "@/components/ButtomPanel.vue";
-import SideBarChat from "@/components/SideBarChat.vue";
+import ButtomPanel from "@/components/lesson/ButtomPanel.vue";
+import SideBarChat from "@/components/lesson/SideBarChat.vue";
 import {ref} from "vue";
-import Subtitle from "@/components/Subtitle.vue";
+import Subtitle from "@/components/lesson/Subtitle.vue";
 import {userStore} from "@/stores/userStore.js";
 
 const isOpen = ref(false)
