@@ -2,6 +2,7 @@
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
+import { ru } from 'date-fns/locale';
 import {
   FormControl,
   FormDescription,
@@ -20,6 +21,8 @@ import { CalendarIcon } from 'lucide-vue-next';
 import AutoFormLabel from './AutoFormLabel.vue';
 import { beautifyObjectName, maybeBooleanishToBoolean } from './utils';
 
+const ruLocale = ru;
+
 defineProps({
   fieldName: { type: String, required: true },
   label: { type: String, required: false },
@@ -28,7 +31,7 @@ defineProps({
   disabled: { type: Boolean, required: false },
 });
 
-const df = new DateFormatter('en-US', {
+const df = new DateFormatter('ru-RU', {
   dateStyle: 'long',
 });
 </script>
@@ -68,12 +71,12 @@ const df = new DateFormatter('en-US', {
                             getLocalTimeZone(),
                           ),
                         )
-                      : "Pick a date"
+                      : "Выберите дату"
                   }}
                 </Button>
               </PopoverTrigger>
               <PopoverContent class="w-auto p-0">
-                <Calendar initial-focus v-bind="slotProps.componentField" />
+                <Calendar initial-focus v-bind="slotProps.componentField" locale="ru"/>
               </PopoverContent>
             </Popover>
           </div>

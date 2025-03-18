@@ -1,6 +1,8 @@
 <script setup>
 import {z} from 'zod'
 import {AutoForm} from "@/components/ui/auto-form/index.js";
+import DateStartField from "@/components/create-lesson/fields/DateStartField.vue";
+import {Button} from "@/components/ui/button/index.js";
 
 const formSchema = z.object({
   theme: z
@@ -19,7 +21,7 @@ const formSchema = z.object({
       })
       .describe("Язык"),
   date_start: z
-      .date({
+      .string({
         required_error: "Выберите дату занятия"
       })
       .describe("Дата и время занятия"),
@@ -28,17 +30,32 @@ const formSchema = z.object({
         required_error: "Укажите аудиторию"
       }).describe("Аудитория занятия").optional()
 })
+
+
+const fieldConfig = {
+  languages_codes: {
+    description: 'Введите язык на который будет переводится занятие'
+  },
+  date_start: {
+    component: DateStartField
+  }
+}
+
+function onSubmit(values) {
+  console.log(values)
+}
 </script>
 
 <template>
   <AutoForm
       :schema="formSchema" class="m-5 w-2/3 space-y-6"
-      :field-config = "{
-        languages_codes: {
-          description: 'Введите язык на который будет переводится занятие'
-        }
-      }"
-  />
+      :field-config = "fieldConfig"
+      @submit="onSubmit"
+  >
+    <Button type="submit">
+      Создать
+    </Button>
+  </AutoForm>
 </template>
 
 <style scoped>

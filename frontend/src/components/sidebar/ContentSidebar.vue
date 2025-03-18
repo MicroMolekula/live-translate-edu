@@ -1,5 +1,4 @@
 <script setup>
-import { Calendar, Home, Inbox } from "lucide-vue-next"
 import {
   SidebarContent,
   SidebarGroup,
@@ -9,7 +8,6 @@ import {
   SidebarMenuItem
 } from "@/components/ui/sidebar/index.js";
 import {useRouter} from "vue-router";
-import ButtonGoUrl from "@/components/sidebar/ButtonGoUrl.vue";
 
 
 const props = defineProps({
@@ -20,10 +18,6 @@ const props = defineProps({
 })
 
 const router = useRouter()
-
-function goUrl(url) {
-
-}
 </script>
 
 <template>
@@ -33,7 +27,12 @@ function goUrl(url) {
       <SidebarGroupContent>
         <SidebarMenu>
           <SidebarMenuItem v-for="item in props.items" :key="item.title">
-            <ButtonGoUrl :item="item" />
+            <SidebarMenuButton asChild>
+              <RouterLink :to="item.url">
+                <component :is="item.icon" />
+                <span>{{item.title}}</span>
+              </RouterLink>
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarGroupContent>
