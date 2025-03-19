@@ -4,6 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/live-translate-edu/internal/controllers/middleware"
 	"github.com/live-translate-edu/internal/utils/roles"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Router struct {
@@ -40,6 +42,7 @@ func NewRouter(
 
 func (r *Router) InitRoutes(engine *gin.Engine) {
 	engine.Use(middleware.CORSMiddleware())
+	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	apiGroup := engine.Group("/api")
 	{
@@ -65,6 +68,7 @@ func (r *Router) InitRoutes(engine *gin.Engine) {
 			authRequiredGroup.GET("/chat/:room/users", r.chat.GetAllUsers)
 			authRequiredGroup.POST("/lesson/create", r.lesson.CreateLesson)
 		}
+
 		apiGroup.POST("/auth", r.auth.Auth)
 		apiGroup.POST("/token", r.room.GetJoinToken)
 	}

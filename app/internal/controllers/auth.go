@@ -21,6 +21,12 @@ func NewAuthController(service *services.AuthService, room *services.RoomService
 	}
 }
 
+// Auth Авторизация
+//
+// @Summary Авторизация
+// @Description Авторизация в систему
+// @Param crids body dto.AuthDto true "почта и пароль"
+// @Router /auth [post]
 func (ac *AuthController) Auth(ctx *gin.Context) {
 	var request dto.AuthDto
 

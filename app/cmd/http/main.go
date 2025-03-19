@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "github.com/live-translate-edu/docs"
 	"github.com/live-translate-edu/internal/di"
 	"github.com/live-translate-edu/internal/server"
 	"log"
@@ -8,6 +9,16 @@ import (
 	_ "net/http/pprof"
 )
 
+// @title           LiveTranslateEdu API
+// @version         1.0
+// @description     API приложения LiveTranslateEdu.
+
+// @host      localhost:8080
+// @BasePath  /api
+
+// @securityDefinitions.apiKey  ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 	di.InitContainer()
 	go func() {

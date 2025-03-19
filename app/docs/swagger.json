@@ -1,0 +1,51 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API приложения LiveTranslateEdu.",
+        "title": "LiveTranslateEdu API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api",
+    "paths": {
+        "/auth": {
+            "post": {
+                "description": "Авторизация в систему",
+                "summary": "Авторизация",
+                "parameters": [
+                    {
+                        "description": "почта и пароль",
+                        "name": "crids",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AuthDto"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        }
+    },
+    "definitions": {
+        "dto.AuthDto": {
+            "type": "object",
+            "properties": {
+                "login": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

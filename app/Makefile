@@ -13,3 +13,5 @@ gen_proto:
 		 yandex/cloud/ai/stt/v3/stt.proto \
 		 yandex/cloud/ai/translate/v2/translation.proto \
 		 yandex/cloud/ai/translate/v2/translation_service.proto
+swagger:
+	 swag init -g cmd/http/main.go

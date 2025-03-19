@@ -1,0 +1,34 @@
+basePath: /api
+definitions:
+  dto.AuthDto:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API приложения LiveTranslateEdu.
+  title: LiveTranslateEdu API
+  version: "1.0"
+paths:
+  /auth:
+    post:
+      description: Авторизация в систему
+      parameters:
+      - description: почта и пароль
+        in: body
+        name: crids
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AuthDto'
+      responses: {}
+      summary: Авторизация
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
