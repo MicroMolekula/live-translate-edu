@@ -8,6 +8,7 @@ type UserDTO struct {
 	Surname string `json:"surname"`
 	Email   string `json:"email"`
 	Role    string `json:"role"`
+	GroupId int    `json:"group_id"`
 }
 
 type UserCreateDTO struct {
@@ -54,6 +55,7 @@ func UserToDTO(model *models.User) *UserDTO {
 		Surname: model.Surname,
 		Email:   model.Email,
 		Role:    model.Role,
+		GroupId: int(model.GroupID.Int64),
 	}
 }
 

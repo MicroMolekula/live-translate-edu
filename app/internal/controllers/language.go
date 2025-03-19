@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/live-translate-edu/internal/dto"
 	"github.com/live-translate-edu/internal/services"
 	"net/http"
 )
@@ -29,4 +30,14 @@ func (lc *LanguageController) Create(ctx *gin.Context) {
 		return
 	}
 	newSuccessResponse(ctx, http.StatusCreated, "Язык успешно добавлен", nil)
+}
+
+func (lc *LanguageController) GetAll(ctx *gin.Context) {
+	var languagesResponse []dto.Language
+	languagesResponse, err := lc.languageService.GetAll()
+	if err != nil {
+		newErrorResponse(ctx, http.StatusInternalServerError, err, "internal server error")
+		return
+	}
+	ctx.JSON(http.StatusOK, languagesResponse)
 }

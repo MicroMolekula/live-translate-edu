@@ -5,6 +5,13 @@ import LessonPage from "@/pages/LessonPage.vue";
 import HomePage from "@/pages/HomePage.vue";
 import AvailableLessonsPage from "@/pages/AvailableLessonsPage.vue";
 import CreateLessonPage from "@/pages/CreateLessonPage.vue";
+import {roomStore} from "@/stores/stores.js";
+
+async function getRoomData(to) {
+    const roomData = roomStore()
+    roomData.mapRoomToken.roomName = to.params.roomName
+    await roomData.getRoomToken()
+}
 
 export const routes = [{
     path: '/auth',
@@ -13,7 +20,8 @@ export const routes = [{
 }, {
     path: '/lesson/:roomName',
     component: LessonPage,
-    name: 'Lesson'
+    name: 'Lesson',
+    beforeEnter: [getRoomData]
 }, {
     path: '/',
     component: HomePage,

@@ -26,14 +26,15 @@ func (g *GroupService) DeleteGroup() error {
 	return nil
 }
 
-func (g *GroupService) GetGroups() ([]*dto.Group, error) {
+func (g *GroupService) GetGroups() ([]dto.Group, error) {
 	groupsModel, err := g.groupRepository.GetAll()
 	if err != nil {
 		return nil, err
 	}
-	groups := make([]*dto.Group, len(groupsModel))
+	groups := make([]dto.Group, len(groupsModel))
 	for i, group := range groupsModel {
-		groups[i] = &dto.Group{
+		groups[i] = dto.Group{
+			Id:    int(group.ID),
 			Title: group.Title,
 			Code:  group.Code,
 		}

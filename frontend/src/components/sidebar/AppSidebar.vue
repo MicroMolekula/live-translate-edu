@@ -6,7 +6,7 @@ import {
 import HeaderSidebar from "@/components/sidebar/HeaderSidebar.vue";
 import ContentSidebar from "@/components/sidebar/ContentSidebar.vue";
 import FooterSidebar from "@/components/sidebar/FooterSidebar.vue";
-import {userStore} from "@/stores/userStore.js";
+import {userStore} from "@/stores/stores.js";
 
 let userData = userStore()
 

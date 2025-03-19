@@ -40,13 +40,17 @@ func ParseDate(date string) (time.Time, error) {
 	return time.ParseInLocation("02-01-2006 15:04", date, timeLocation)
 }
 
+func DateToString(t time.Time) string {
+	return t.Format("02-01-2006 15:04")
+}
+
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-func GenerateCodeRoom(roomNumber int) string {
+func GenerateCodeRoom(roomNumber string) string {
 	rand := rand2.New(rand2.NewSource(time.Now().UnixNano()))
 	b := make([]byte, 10)
 	for i := range b {
 		b[i] = charset[rand.Intn(len(charset))]
 	}
-	return fmt.Sprintf("room%s-%d", string(b), roomNumber)
+	return fmt.Sprintf("room%s-%s", string(b), roomNumber)
 }

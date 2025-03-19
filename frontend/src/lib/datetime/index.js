@@ -6,7 +6,7 @@ export function datetimeToBString(datetime, localeString="ru") {
 }
 
 export function datetimeToString(datetime, localeString="ru") {
-    return format(datetime, 'dd-MM-yy HH:mm:ss', {locale: ru})
+    return format(datetime, 'dd-MM-yyyy HH:mm', {locale: ru})
 }
 
 export function stringToDate(datetime, localeString="ru") {

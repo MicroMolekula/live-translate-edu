@@ -60,7 +60,7 @@ type Lesson struct {
 	gorm.Model
 	Presentation   sql.NullString
 	DateTimeStart  time.Time
-	NumberRoom     uint
+	NumberRoom     string
 	CodeRoom       string
 	Messages       []Message
 	TeacherID      uint

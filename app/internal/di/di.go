@@ -70,6 +70,7 @@ func getRepositories() []interface{} {
 		repository.NewGroupRepository,
 		repository.NewLanguageRepository,
 		repository.NewLessonRepository,
+		repository.NewLessonContentRepository,
 	}
 }
 
@@ -83,5 +84,6 @@ func getControllers() []interface{} {
 		controllers.NewGroupController,
 		controllers.NewLanguageController,
 		controllers.NewLessonController,
+		controllers.NewUtilsController,
 	}
 }

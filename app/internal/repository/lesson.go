@@ -21,7 +21,7 @@ func (lr *LessonRepository) Create(lesson *dto.LessonCreate) error {
 		err := tx.Create(&models.Lesson{
 			GroupID:       uint(lesson.GroupId),
 			TeacherID:     uint(lesson.TeacherId),
-			NumberRoom:    uint(lesson.NumberRoom),
+			NumberRoom:    lesson.NumberRoom,
 			DateTimeStart: lesson.DateTimeStart.ToTime(),
 			CodeRoom:      utils.GenerateCodeRoom(lesson.NumberRoom),
 		}).Scan(&lessonModel).Error
@@ -37,8 +37,12 @@ func (lr *LessonRepository) Create(lesson *dto.LessonCreate) error {
 		}
 		lessonContents := make([]models.LessonContent, len(languages))
 		for i, language := range languages {
+			theme := lesson.Theme
+			if language.Code != "ru" {
+				theme = lesson.ThemeTranslate
+			}
 			lessonContents[i] = models.LessonContent{
-				Theme:      lesson.Theme,
+				Theme:      theme,
 				LanguageID: language.ID,
 				LessonID:   lessonModel.ID,
 				Content:    "",
@@ -54,6 +58,22 @@ func (lr *LessonRepository) Create(lesson *dto.LessonCreate) error {
 func (lr *LessonRepository) GetAll() ([]*models.Lesson, error) {
 	var lessons []*models.Lesson
 	if err := lr.db.Find(&lessons).Error; err != nil {
+		return nil, err
+	}
+	return lessons, nil
+}
+
+func (lr *LessonRepository) GetByUserId(id uint) ([]*models.Lesson, error) {
+	var lessons []*models.Lesson
+	if err := lr.db.Model(&models.Lesson{}).Where("teacher_id=?", id).Find(&lessons).Error; err != nil {
+		return nil, err
+	}
+	return lessons, nil
+}
+
+func (lr *LessonRepository) GetByGroupId(groupId int) ([]*models.Lesson, error) {
+	var lessons []*models.Lesson
+	if err := lr.db.Model(&models.Lesson{}).Where("group_id=?", groupId).Find(&lessons).Error; err != nil {
 		return nil, err
 	}
 	return lessons, nil

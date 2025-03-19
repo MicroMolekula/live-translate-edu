@@ -10,6 +10,7 @@ import {
   BiTelephoneFill
 } from "oh-vue-icons/icons"
 import {ref} from "vue";
+import {userStore} from "@/stores/stores.js";
 addIcons(FaMicrophone)
 addIcons(FaUsers)
 addIcons(FaMicrophoneSlash)
@@ -17,13 +18,25 @@ addIcons(BiChatLeftDots)
 addIcons(BiChatLeftDotsFill)
 addIcons(BiTelephoneFill)
 
-const emit = defineEmits(['chat'])
+const emit = defineEmits(['chat', 'mute', 'leave'])
 
-const micOn = ref(true)
+const userData = userStore()
+
+const micOn = ref(false)
 
 function openChat() {
   emit('chat', true)
 }
+
+function handleMicro() {
+  micOn.value = !micOn.value
+  emit('mute', micOn.value)
+}
+
+function handleLeave() {
+  emit('leave', true)
+}
+
 </script>
 
 <template>
@@ -46,11 +59,11 @@ function openChat() {
     </div>
     <!-- Вспомогательные кнопки -->
     <div class="flex gap-2">
-      <Button variant="secondary" @click="()=>{micOn = !micOn}">
+      <Button v-if="userData.user.role === 'teacher'" variant="secondary" @click="handleMicro">
         <Vicon v-if="micOn" name="fa-microphone" class="icon"/>
         <Vicon v-else name="fa-microphone-slash" fill="red" class="icon"/>
       </Button>
-      <Button variant="destructive">
+      <Button variant="destructive" @click="handleLeave">
         <Vicon name="bi-telephone-fill" class="icon" fill="white"></Vicon>
       </Button>
     </div>

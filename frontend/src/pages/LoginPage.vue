@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {ref} from "vue";
 import login from '@/lib/request/login.js'
-import {userStore} from '@/stores/userStore.js'
+import {userStore} from '@/stores/stores.js'
 import {useRouter} from "vue-router";
 
 const userData = ref({

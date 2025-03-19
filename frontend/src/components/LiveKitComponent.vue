@@ -103,35 +103,6 @@ let chatMessages = ref([
     }
   }
 ])
-
-const wsClient = new WebSocket('ws://localhost:8080/api/chat/connect/' + roomName.value, ['auth', localStorage.getItem('jwt')])
-
-wsClient.onopen = function () {
-  console.log("Успешное подключение")
-}
-
-wsClient.onmessage = function(event) {
-  let messageResponse = JSON.parse(event.data)
-  let message = {
-    user: `${messageResponse.user.name} ${messageResponse.user.surname}`,
-    text: {
-      ru: messageResponse.translate_content,
-      en: messageResponse.content
-    }
-  }
-  chatMessages.value.push(message)
-}
-
-const newMessage = ref('')
-
-
-function sendMessage() {
-  wsClient.send(JSON.stringify({
-    content: newMessage.value
-  }))
-  newMessage.value = ''
-}
-
 </script>
 
 <template>

@@ -3,6 +3,7 @@ package dto
 import "github.com/live-translate-edu/internal/models"
 
 type Group struct {
+	Id    int    `json:"id"`
 	Title string `json:"title"`
 	Code  string `json:"code"`
 }

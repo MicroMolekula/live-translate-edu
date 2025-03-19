@@ -27,11 +27,23 @@ func (ur *UserRepository) Create(user *models.User) error {
 }
 
 func (ur *UserRepository) FindOneById(id uint) (models.IModel, error) {
-	var user *models.User
+	var user models.IModel
 	if err := ur.db.First(user, id).Error; err != nil {
 		return nil, err
 	}
 	return user, nil
+}
+
+func (ur *UserRepository) FindByIds(ids []uint) (map[uint]*models.User, error) {
+	var users []*models.User
+	if err := ur.db.Where("id in (?)", ids).Find(&users).Error; err != nil {
+		return nil, err
+	}
+	result := make(map[uint]*models.User)
+	for _, user := range users {
+		result[user.ID] = user
+	}
+	return result, nil
 }
 
 func (ur *UserRepository) FindOneByEmail(email string) (*models.User, error) {

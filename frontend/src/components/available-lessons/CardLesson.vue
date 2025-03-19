@@ -1,13 +1,7 @@
 <script setup>
 import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card/index.js";
 import {Button} from "@/components/ui/button/index.js";
-
-let lesson = {
-  title: "Тестовое занятия",
-  numberRoom: 255,
-  teacher: 'Teacher Teacherov',
-  datetime: '01-02-2025 10:10'
-}
+import {useRouter} from "vue-router";
 
 const props = defineProps({
   lesson: {
@@ -15,6 +9,12 @@ const props = defineProps({
     required: true
   }
 })
+
+const router = useRouter()
+
+function handleButton() {
+  router.push('/lesson/' + props.lesson.code)
+}
 </script>
 
 <template>
@@ -28,7 +28,7 @@ const props = defineProps({
     <div>Дата и время начала: {{ props.lesson.datetime }}</div>
   </CardContent>
   <CardFooter>
-    <Button>Присоедениться</Button>
+    <Button @click="handleButton">Присоедениться</Button>
   </CardFooter>
 </Card>
 </template>
