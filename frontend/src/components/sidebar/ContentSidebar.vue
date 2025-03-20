@@ -27,7 +27,7 @@ const router = useRouter()
       <SidebarGroupContent>
         <SidebarMenu>
           <SidebarMenuItem v-for="item in props.items" :key="item.title">
-            <SidebarMenuButton asChild>
+            <SidebarMenuButton asChild v-if="item.view">
               <RouterLink :to="item.url">
                 <component :is="item.icon" />
                 <span>{{item.title}}</span>

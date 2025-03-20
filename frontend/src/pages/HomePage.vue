@@ -8,24 +8,30 @@ import HeaderHome from "@/components/home/HeaderHome.vue";
 import {onMounted, onUpdated, ref} from "vue";
 import {Calendar, Home, Inbox} from "lucide-vue-next";
 import {useRoute} from "vue-router";
+import {userStore} from "@/stores/stores.js";
 
 const open = ref(true)
+
+const userData = userStore()
 
 const items = [
   {
     title: "Доступные занятия",
     url: "/",
     icon: Home,
+    view: true,
   },
   {
     title: "История занятий",
     url: "#",
     icon: Inbox,
+    view: true
   },
   {
     title: "Создать занятие",
     url: "/lesson/create",
     icon: Calendar,
+    view: userData.user.role === 'teacher'
   }
 ];
 
