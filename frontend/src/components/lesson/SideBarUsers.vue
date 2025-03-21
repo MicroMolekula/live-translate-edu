@@ -27,5 +27,7 @@ const props = defineProps({
 </template>
 
 <style scoped>
-
+.border-chat {
+  border-radius: 8px;
+}
 </style>

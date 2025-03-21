@@ -1,10 +1,64 @@
 basePath: /api
 definitions:
+  controllers.AddUsersInGroup.userIds:
+    properties:
+      users_ids:
+        items:
+          type: integer
+        type: array
+    type: object
+  controllers.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  controllers.SuccessResponse:
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  controllers.TokenResponse:
+    properties:
+      success:
+        type: boolean
+      token:
+        type: string
+    type: object
   dto.AuthDto:
     properties:
       login:
         type: string
       password:
+        type: string
+    type: object
+  dto.Group:
+    properties:
+      code:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+    type: object
+  dto.UserDTO:
+    properties:
+      email:
+        type: string
+      group_id:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      role:
+        type: string
+      surname:
         type: string
     type: object
 host: localhost:8080
@@ -14,18 +68,214 @@ info:
   title: LiveTranslateEdu API
   version: "1.0"
 paths:
+  /admin/groups/:id/users:
+    get:
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Получение всех студентов из группы
+      tags:
+      - admin
+  /admin/groups/:id/users/add:
+    post:
+      parameters:
+      - description: Массив id студентов
+        in: body
+        name: q
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.AddUsersInGroup.userIds'
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Добавление пользователя в группу
+      tags:
+      - admin
+  /admin/groups/create:
+    post:
+      description: Добавление новой группы студентов
+      parameters:
+      - description: данные о группе
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Group'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controllers.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Добавление новой группы студентов
+      tags:
+      - admin
+  /admin/language/create:
+    post:
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Добавление нового языка в систему
+      tags:
+      - admin
+  /admin/users:
+    get:
+      description: Получение данных о всех пользователях доступно (доступно только
+        админу)
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.UserDTO'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Получение данных о всех пользователях
+      tags:
+      - admin
   /auth:
     post:
       description: Авторизация в систему
       parameters:
       - description: почта и пароль
         in: body
-        name: crids
+        name: credentials
         required: true
         schema:
           $ref: '#/definitions/dto.AuthDto'
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.TokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
       summary: Авторизация
+      tags:
+      - user
+  /chat/:room/users:
+    get:
+      description: Получение спика участников чата
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.UserDTO'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Получение спика участников чата
+      tags:
+      - chat
+  /chat/connect/:room:
+    get:
+      description: Подключение к чату, устанавливает соединение по websocket
+      responses:
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Подключение к чату
+      tags:
+      - chat
+  /groups:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.Group'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Получение списка всех групп
+      tags:
+      - group
+  /language:
+    get:
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Получение списка доступных языков в системе
+      tags:
+      - language
+  /me:
+    get:
+      description: Получение данных о авторизованном пользователе по jwt
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Получение данных о авторизованном пользователе
+      tags:
+      - user
 securityDefinitions:
   ApiKeyAuth:
     in: header

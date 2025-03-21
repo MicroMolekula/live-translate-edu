@@ -78,3 +78,11 @@ func (lr *LessonRepository) GetByGroupId(groupId int) ([]*models.Lesson, error) 
 	}
 	return lessons, nil
 }
+
+func (lr *LessonRepository) GetLessonByCode(code string) (*models.Lesson, error) {
+	var lesson *models.Lesson
+	if err := lr.db.Model(&models.Lesson{}).Where("code_room=?", code).Find(&lesson).Error; err != nil {
+		return nil, err
+	}
+	return lesson, nil
+}

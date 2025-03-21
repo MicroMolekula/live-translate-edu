@@ -4,6 +4,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type ErrorResponse struct {
+	Error   string `json:"error"`
+	Success bool   `json:"success"`
+	Message string `json:"message"`
+}
+
+type SuccessResponse struct {
+	Success bool   `json:"success"`
+	Message string `json:"message"`
+}
+
+type TokenResponse struct {
+	Token   string `json:"token"`
+	Success bool   `json:"success"`
+}
+
 func newErrorResponse(ctx *gin.Context, status int, err error, message string) {
 	ctx.JSON(status, gin.H{
 		"error":   err.Error(),

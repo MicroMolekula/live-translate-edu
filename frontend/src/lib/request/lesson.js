@@ -60,3 +60,15 @@ export async function disconnectRoom(token, roomName) {
         throw new Error('ошибка отключения от распознавания речи')
     }
 }
+
+export async function getUsersInLesson(token, roomName) {
+    try {
+        return await axios.get(`/api/chat/${roomName}/users`, {
+            headers: {
+                Authorization: 'Bearer ' + token
+            }
+        })
+    } catch {
+        throw new Error('ошибка получения списка участников занятия')
+    }
+}

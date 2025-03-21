@@ -18,14 +18,20 @@ addIcons(BiChatLeftDots)
 addIcons(BiChatLeftDotsFill)
 addIcons(BiTelephoneFill)
 
-const emit = defineEmits(['chat', 'mute', 'leave'])
+const emit = defineEmits(['chat', 'mute', 'leave', 'users'])
 
 const userData = userStore()
+const users = ref(false)
 
 const micOn = ref(false)
 
 function openChat() {
   emit('chat', true)
+}
+
+function openUsers() {
+  users.value = !users.value
+  emit('users', users.value)
 }
 
 function handleMicro() {
@@ -52,7 +58,7 @@ function handleLeave() {
         <Vicon name="bi-chat-left-dots-fill" class="icon"/>
         Чат
       </Button>
-      <Button variant="secondary">
+      <Button @click="openUsers" variant="secondary">
         <Vicon name="fa-users" class="icon"/>
         Участники
       </Button>

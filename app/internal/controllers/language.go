@@ -15,6 +15,12 @@ func NewLanguageController(language *services.LanguageService) *LanguageControll
 	return &LanguageController{languageService: language}
 }
 
+// Create
+//
+// @Summary Добавление нового языка в систему
+// @Tags admin
+// @Security ApiKeyAuth
+// @Router /admin/language/create [post]
 func (lc *LanguageController) Create(ctx *gin.Context) {
 	type languageRequest struct {
 		Title string `json:"title" binding:"required"`
@@ -32,6 +38,12 @@ func (lc *LanguageController) Create(ctx *gin.Context) {
 	newSuccessResponse(ctx, http.StatusCreated, "Язык успешно добавлен", nil)
 }
 
+// GetAll
+//
+// @Summary Получение списка доступных языков в системе
+// @Tags language
+// @Security ApiKeyAuth
+// @Router /language [get]
 func (lc *LanguageController) GetAll(ctx *gin.Context) {
 	var languagesResponse []dto.Language
 	languagesResponse, err := lc.languageService.GetAll()

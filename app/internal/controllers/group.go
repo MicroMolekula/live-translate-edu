@@ -18,6 +18,18 @@ func NewGroupController(groupService *services.GroupService) *GroupController {
 	return &GroupController{groupService: groupService}
 }
 
+// AddGroup Добавление новой группы студентов
+//
+// @Tags admin
+// @Summary Добавление новой группы студентов
+// @Description Добавление новой группы студентов
+// @Security ApiKeyAuth
+// @Param data body dto.Group true "данные о группе"
+// @Success 201 {object} SuccessResponse
+// @Failure 500 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
+// @Failure 400 {object} ErrorResponse
+// @Router /admin/groups/create [post]
 func (gac *GroupController) AddGroup(ctx *gin.Context) {
 	var groupRequest *dto.Group
 	if err := ctx.ShouldBindJSON(&groupRequest); err != nil {
@@ -31,6 +43,15 @@ func (gac *GroupController) AddGroup(ctx *gin.Context) {
 	newSuccessResponse(ctx, http.StatusCreated, "Группа успешно добавлена", nil)
 }
 
+// GetGroups
+//
+// @Summary Получение списка всех групп
+// @Tags group
+// @Security ApiKeyAuth
+// @Success 200 {array} dto.Group
+// @Failure 401 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /groups [get]
 func (gac *GroupController) GetGroups(ctx *gin.Context) {
 	groups, err := gac.groupService.GetGroups()
 	if err != nil {
@@ -40,6 +61,18 @@ func (gac *GroupController) GetGroups(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, groups)
 }
 
+// AddUsersInGroup
+//
+// @Summary Добавление пользователя в группу
+// @Tags admin
+// @Security ApiKeyAuth
+// @Param id path int true "Id группы"
+// @Param q body controllers.AddUsersInGroup.userIds true "Массив id студентов"
+// @Success 200 {object} SuccessResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
+// @Router /admin/groups/:id/users/add [post]
 func (gac *GroupController) AddUsersInGroup(ctx *gin.Context) {
 	type userIds struct {
 		Ids []int `json:"users_ids"`
@@ -62,6 +95,14 @@ func (gac *GroupController) AddUsersInGroup(ctx *gin.Context) {
 	newSuccessResponse(ctx, http.StatusOK, "Пользователи добавлены в группу", nil)
 }
 
+// GetUsers
+//
+// @Summary Получение всех студентов из группы
+// @Tags admin
+// @Security ApiKeyAuth
+// @Param id path int true "Id группы"
+// @Success {array} dto.UserDTO
+// @Router /admin/groups/:id/users [get]
 func (gac *GroupController) GetUsers(ctx *gin.Context) {
 	groupId, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {

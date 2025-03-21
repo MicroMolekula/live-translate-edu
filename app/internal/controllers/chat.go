@@ -35,6 +35,16 @@ func NewChatController(cfg *configs.Config) *ChatController {
 	}
 }
 
+// Connect Подключение к чату
+//
+// @Tags chat
+// @Summary Подключение к чату
+// @Description Подключение к чату, устанавливает соединение по websocket
+// @Security ApiKeyAuth
+// @Param room path string true "Код комнаты занятия"
+// @Failure 500 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
+// @Router /chat/connect/:room [get]
 func (c *ChatController) Connect(ctx *gin.Context) {
 	c.upgrader.Subprotocols = []string{"auth", ctx.Value("jwt").(string)}
 	user := ctx.Value("user").(*dto.UserDTO)
@@ -51,6 +61,17 @@ func (c *ChatController) Connect(ctx *gin.Context) {
 	go client.Read()
 }
 
+// GetAllUsers Получение спика участников чата
+//
+// @Tags chat
+// @Summary Получение спика участников чата
+// @Description Получение спика участников чата
+// @Security ApiKeyAuth
+// @Param room path string true "Код команты занятия"
+// @Success 200 {array} dto.UserDTO
+// @Failure 500 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
+// @Router /chat/:room/users [get]
 func (c *ChatController) GetAllUsers(ctx *gin.Context) {
 	room := ctx.Param("room")
 	users, err := c.hub.GetUsers(room)

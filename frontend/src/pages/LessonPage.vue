@@ -10,15 +10,18 @@ import {
   RoomEvent,
   Track,
 } from 'livekit-client';
-import {connectRoom, disconnectRoom} from "@/lib/request/lesson.js";
+import {connectRoom, disconnectRoom, getUsersInLesson} from "@/lib/request/lesson.js";
+import SideBarUsers from "@/components/lesson/SideBarUsers.vue";
 
 const decoder = new TextDecoder()
 
-const isOpen = ref(false)
+const chatOpen = ref(false)
+const usersOpen = ref(false)
 const userData = userStore()
 const roomData = roomStore()
 const room = new Room()
 const unmuteMicro = ref(false)
+const usersConnects = ref([])
 
 const subtitle = ref('')
 const wsClient = ref()
@@ -125,7 +128,27 @@ function leave() {
 }
 
 function openChat(msg) {
-  isOpen.value = !isOpen.value
+  if (usersOpen.value) {
+    usersOpen.value = false
+  }
+  chatOpen.value = !chatOpen.value
+}
+
+function openUsers() {
+  if (chatOpen.value) {
+    chatOpen.value = false
+  }
+  usersOpen.value = !usersOpen.value
+  if (usersOpen.value) {
+    getUsersInLesson(userData.token, roomData.mapRoomToken.roomName)
+        .then((result) => {
+          console.log(result.data.users)
+          usersConnects.value = result.data.users
+        })
+        .catch((e) => {
+          console.log(e.message)
+        })
+  }
 }
 </script>
 
@@ -135,9 +158,10 @@ function openChat(msg) {
       <div class="flex-1 grid gap-4 p-4 place-items-center">
         <Subtitle :text="subtitle"></Subtitle>
       </div>
-      <SideBarChat :open="isOpen"/>
+      <SideBarChat :open="chatOpen"/>
+      <SideBarUsers :users-chat="usersConnects" :open="usersOpen"/>
     </div>
-    <ButtomPanel class="h-20" style="min-height: 80px" @chat="openChat" @mute="mute" @leave="leave"></ButtomPanel>
+    <ButtomPanel class="h-20" style="min-height: 80px" @chat="openChat" @users="openUsers" @mute="mute" @leave="leave"></ButtomPanel>
   </div>
 </template>
 

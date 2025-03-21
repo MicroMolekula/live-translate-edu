@@ -23,9 +23,14 @@ func NewAuthController(service *services.AuthService, room *services.RoomService
 
 // Auth Авторизация
 //
+// @Tags user
 // @Summary Авторизация
 // @Description Авторизация в систему
-// @Param crids body dto.AuthDto true "почта и пароль"
+// @Param credentials body dto.AuthDto true "почта и пароль"
+// @Success 200 {object} TokenResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
 // @Router /auth [post]
 func (ac *AuthController) Auth(ctx *gin.Context) {
 	var request dto.AuthDto
@@ -46,12 +51,22 @@ func (ac *AuthController) Auth(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"token":   token,
-		"success": true,
+	ctx.JSON(http.StatusOK, TokenResponse{
+		Token:   token,
+		Success: true,
 	})
 }
 
+// Me Получение данных о авторизованном пользователе
+//
+// @Tags user
+// @Summary Получение данных о авторизованном пользователе
+// @Description Получение данных о авторизованном пользователе по jwt
+// @Security ApiKeyAuth
+// @Success 200 {object} dto.UserDTO
+// @Failure 500 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
+// @Router /me [get]
 func (ac *AuthController) Me(ctx *gin.Context) {
 	user, ok := ctx.Value("user").(*dto.UserDTO)
 	if !ok {
@@ -86,6 +101,16 @@ func (ac *AuthController) AuthRequiredMiddleware() gin.HandlerFunc {
 	}
 }
 
+// Users Получение данных о всех пользователях
+//
+// @Tags admin
+// @Summary Получение данных о всех пользователях
+// @Description Получение данных о всех пользователях доступно (доступно только админу)
+// @Security ApiKeyAuth
+// @Success 200 {array} dto.UserDTO
+// @Failure 500 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse
+// @Router /admin/users [get]
 func (ac *AuthController) Users(ctx *gin.Context) {
 	users, err := ac.authService.AllUsers()
 	if err != nil {

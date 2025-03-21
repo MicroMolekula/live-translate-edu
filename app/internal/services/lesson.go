@@ -12,6 +12,7 @@ import (
 	"github.com/live-translate-edu/internal/utils/roles"
 	"golang.org/x/exp/slices"
 	"log"
+	"strconv"
 )
 
 type LessonService struct {
@@ -139,4 +140,26 @@ func (ls *LessonService) createFullLesson(lessonsModels []*models.Lesson) ([]*dt
 		result = append(result, lesson)
 	}
 	return result, nil
+}
+
+func (ls *LessonService) GetLessonByCode(code string) (*dto.LessonFull, error) {
+	lessonModel, err := ls.lessonRepository.GetLessonByCode(code)
+	if err != nil {
+		return nil, err
+	}
+	lessonContents, err := ls.lessonContentRepository.GetLessonContentByLessonId(lessonModel.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &dto.LessonFull{
+		Id:   int(lessonModel.ID),
+		Code: lessonModel.CodeRoom,
+		Lesson: dto.Lesson{
+			DateTimeStart: dto.DateTime(lessonModel.DateTimeStart),
+			Presentation:  lessonModel.Presentation.String,
+			NumberRoom:    lessonModel.NumberRoom,
+		},
+		Contents: lessonContents,
+		Teacher:  strconv.Itoa(int(lessonModel.TeacherID)),
+	}, nil
 }

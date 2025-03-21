@@ -61,3 +61,13 @@ func (lc *LessonController) GetByUser(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, lessons)
 }
+
+func (lc *LessonController) GetByCode(ctx *gin.Context) {
+	code := ctx.Param("code")
+	lesson, err := lc.lessonService.GetLessonByCode(code)
+	if err != nil {
+		newErrorResponse(ctx, http.StatusInternalServerError, err, "internal server error")
+		return
+	}
+	ctx.JSON(http.StatusOK, lesson)
+}
